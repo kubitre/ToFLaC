@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Container, Row, Col, Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap';
+import {Container, Row, Col} from 'reactstrap';
 import ContextMenu from '../ContextMenu';
 
 export default class Navbar extends Component{
