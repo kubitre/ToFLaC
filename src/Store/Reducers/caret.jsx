@@ -3,6 +3,6 @@ const initState = {
     "column": 1
 }
 
-export default caretState = (state = initState) => {
+export default function caretState (state = initState) {
     return state;
 }
