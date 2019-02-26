@@ -1,24 +1,16 @@
 import React, {Component} from 'react';
-import Navbar from '../../Components/Navbar';
-import InputBlockComponent from '../../Components/InputBlock';
-import OutputBlockComponent from '../../Components/OutputBlock';
 import { connect } from 'react-redux';
-
+import { bindActionCreators } from 'redux';
+import * as userActions from '../../Store/Actions/user';
+import * as windowActions from '../../Store/Actions/window';
+import * as caretActions from '../../Store/Actions/caret';
+import * as textEditorActions from '../../Store/Actions/textEditor';
 
 class MainPageComponent extends Component{
     render = () => {
-        const {enabledOutputBlock} = false
         return (
-            <div className="main_page_container" style={{display: 'flex', flexDirection: 'column'}}>
-                {window.innerHeight < 500 ? 
-                    <Navbar height="10vh"/>
-                    :
-                    <Navbar height="20vh"/>
-                }
-                <div className="blocks_row" style={{display: 'flex', flexDirection: "column", marginLeft: '10px'}}>
-                    <InputBlockComponent height="60vh" width="97vw"/>
-                    <OutputBlockComponent height="40vh" width="90vw" isEnabled={enabledOutputBlock}/>
-                </div>
+            <div className="ma in_page_container" style={{display: 'flex', flexDirection: 'column'}}>
+            
             </div>
         )
     }
@@ -26,8 +18,20 @@ class MainPageComponent extends Component{
 
 function mapStateToProps (state) {
     return {
-        user: state.user
+        user: state.userState,
+        caret: state.caretState,
+        window: state.windowState,
+        textEditor: state.textEditorState,
     }
 }
 
-export default connect(mapStateToProps)(MainPageComponent)
+function mapDispatchToProps(dispatch) {
+    return {
+        userActions: bindActionCreators(userActions, dispatch),
+        windowActions: bindActionCreators(windowActions, dispatch),
+        caretActions: bindActionCreators(caretActions, dispatch),
+        textEditorActions: bindActionCreators(textEditorActions, dispatch)
+    }
+  }
+
+export default connect(mapStateToProps, mapDispatchToProps)(MainPageComponent)
