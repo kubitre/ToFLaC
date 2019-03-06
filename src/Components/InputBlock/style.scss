@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css?family=Source+Code+Pro:600,700');
+
+.input_block_component{
+    background: #002b36;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    font-family: 'Source Code Pro', monospace;
+    
+    .input_stream_block{
+        width: 100%;
+        height: 100%;
+        padding-left: 12px;
+        color: #586e75;
+        font-weight: 600;
+        overflow: auto;
+        max-height: 95vh;
+        
+        &:focus{
+            outline: 0px solid transparent;
+        }
+    }
+    .left_side_line_numbers{
+        display: flex;
+        flex-direction: column;
+        padding: 0 15px;
+        color: #586e75;
+        font-weight: 500;
+        background: #073642;
+        // border-right: 1px solid #e6e6e6;
+    }
+}

@@ -1,26 +1,44 @@
-import React from 'react';
+import React, {Component} from 'react';
 
 import './style.scss';
 
-export default StatusBar = () => {
-    console.log(this.props);
-    const {column, line} = this.props.caret;
-    const {warnsAmount, errorsAmount} = this.props.status;
-    const {language} = this.props;
+class StatusBar extends Component{
+    constructor(props){
+        super(props);
+    }
 
-    return (
-        <div className="status_bar_component">
-            <div className="left_side">
-                <h4 className="language">lang: {language}</h4>
-            </div>
-            <div className="right_side">
-                <div className="info_block">
-                    <h4 className="errors">{errorsAmount} Errors</h4>
-                    <span className="separator">|</span>
-                    <h4 className="warnings">{warnsAmount} Warnings</h4>
+
+    render = () => {
+        const {language} = props;
+        const {}
+        return (
+            <div className="status_bar_component">
+                <div className="left_side">
+                    <div className="language">lang: {language}</div>
                 </div>
-                <div className="caret_info">Line: {line} | Col: {column}</div>
+                <div className="right_side">
+                    <div className="info_block">
+                        <div className="errors">{errorsAmount} Errors</div>
+                        <span className="separator">|</span>
+                        <div className="warnings">{warnsAmount} Warnings</div>
+                    </div>
+                    <div className="caret_info">Line: {line} | Col: {column}</div>
+                </div>
             </div>
-        </div>
-    )
+        )
+    }
 }
+
+
+function mapStateToProps (state) {
+    return {
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        
+    }
+  }
+
+export default connect(mapStateToProps, mapDispatchToProps)(StatusBar)

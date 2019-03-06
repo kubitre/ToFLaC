@@ -1,8 +1,9 @@
-import {createStore} from 'redux';
+import {createStore, applyMiddleware} from 'redux';
 import rootReducer from './Reducers';
+import {logger} from './enchancers/logger';
 
 export default function configureStore(initialState){
-    const store = createStore(rootReducer, initialState)
+    const store = createStore(rootReducer, initialState, applyMiddleware(logger))
 
     if (module.hot){
         module.hot.accept('./Reducers', () => {

@@ -1,5 +1,5 @@
 import '../Constants/caret';
-import { GET_CARET_POSITION, SET_COLUMN_POSITION, ADD_LINE_POSITION, REMOVE_LINE_POSITION, REMOVE_COLUMN_POSITION } from '../Constants/caret';
+import { GET_CARET_POSITION, SET_COLUMN_POSITION, ADD_LINE_POSITION, REMOVE_LINE_POSITION, REMOVE_COLUMN_POSITION, ADD_COLUMN_POSITION, SET_LINE_POSITION } from '../Constants/caret';
 
 export function getCurrentCaretPosition(position){
     return {
@@ -29,9 +29,23 @@ export function addNewLinePosition(newposition){
     }
 }
 
+export function addNewColumnPosition(newposition){
+    return{
+        "type": ADD_COLUMN_POSITION,
+        "payload": newposition,
+    }
+}
+
 export function removeLinePosition(position){
     return {
         "type": REMOVE_LINE_POSITION,
-        "payload": position
+        "payload": position,
+    }
+}
+
+export function setNewLinePosition(newposition){
+    return {
+        "type": SET_LINE_POSITION,
+        "payload": newposition,
     }
 }

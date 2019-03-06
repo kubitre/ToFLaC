@@ -2,7 +2,7 @@ import '../Constants/text';
 import { COPY_TEXT, PASTE_TEXT, CUT_TEXT } from '../Constants/text';
 
 const initState = {
-    "text": ""
+    "html": "<div><br></div>"
 };
 
 export default function textEditorState(state = initState, action){

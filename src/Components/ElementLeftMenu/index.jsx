@@ -2,9 +2,9 @@ import React from 'react';
 
 import './style.scss';
 
-export default ElementLeftMenu = () => {
-    console.log(this.props);
-    const {img, name, visible_img} = this.props.element;
+export default function ElementLeftMenu(props) {
+    // console.log(this.props);
+    const {img, name, visible_img} = props.element;
     return (
         <div className="element_left_panel_menu">
             {visible_img ? 
@@ -13,8 +13,8 @@ export default ElementLeftMenu = () => {
                         background: `url(${img})`,
                         backgroundSize: 'cover',
                         backgroundRepeat: 'no-repeat',
-                        width: '75px',
-                        height: 'auto'
+                        width: '35px',
+                        height: '35px'
                     }}
                 />
                 :

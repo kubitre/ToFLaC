@@ -3,6 +3,23 @@ import { CREATE_NEW_CODE_FILE_WINDOW, OPEN_FILE_FROM_LOCAL_DISK, HELPER_PROGRAMM
 
 const initState = {
     "current": "mainpage",
+    "left_menu": [
+        {
+            "img": "#",
+            "name": "test1",
+            "visible_image": false
+        },
+        {
+            "img": "#",
+            "name": "test2",
+            "visible_image": false
+        },
+        {
+            "img": "#",
+            "name": "test3",
+            "visible_image": false
+        }
+    ]
 }
 
 export default function windowState (state = initState, action) {

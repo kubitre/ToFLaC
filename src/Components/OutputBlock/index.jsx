@@ -2,7 +2,7 @@ import React from 'react';
 
 import './style.scss';
 
-export default OutputBlock = () => {
+export default function OutputBlock () {
     console.log(this.props);
 
     const {text_with_analys} = this.props;

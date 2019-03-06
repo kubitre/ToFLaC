@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css?family=Comfortaa:400,700');
+
+.tab_panel_component{
+    display: flex;
+    flex-direction: row;
+    background:  #030429;
+    width: 100%;
+
+    .element_tab{
+        display: flex;
+        flex-direction: row;
+        padding: 3px 35px;
+        font-family: 'Comfortaa', cursive;
+        font-weight: 700;
+        font-size: 0.9em;
+        border-radius: 50px;
+        background: #0E2433;
+        color: #e6e6e6;
+        margin: 5px;
+
+        .closing_file{
+            position: relative;
+            right: -35px;
+            top: 4px;
+            width: 28px;
+            height: 28px;
+            opacity: 0.3;
+        }
+        .closing_file:hover {
+            opacity: 1;     
+        }
+        .closing_file:before, .closing_file:after {
+            position: absolute;
+            left: 10px;
+            content: ' ';
+            height: 16px;
+            width: 2px;
+            background-color: #fff;
+        }
+        .closing_file:before {
+            transform: rotate(45deg);
+        }
+        .closing_file:after {
+            transform: rotate(-45deg);
+        }
+    }
+
+    ._active{
+        background:  #9B0000;
+    }
+}

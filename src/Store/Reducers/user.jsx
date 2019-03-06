@@ -4,7 +4,8 @@ import { GET_USER, GET_DIR_USER, LOGOUT_USER, CREATE_NEW_USER } from '../Constan
 const initState = {
     "username": "unknown",
     "token": null,
-    "projects": null
+    "projects": null,
+    "avatar": ""
 };
 
 export default function userState (state = initState, action) {
