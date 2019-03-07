@@ -1,52 +1,53 @@
 import React, {Component} from 'react';
-import MainBlock from '../../Components/MainBlock';
 import LeftPanel from '../../Components/LeftPanel';
+import TabPanel from '../../Components/TabPanel';
+import StatusBar from '../../Components/StatusBar';
+import InputBlock from '../../Components/InputBlock';
+import OutputBlock from '../../Components/OutputBlock';
+import EmptyField from '../../Components/EmptyField';
+import LinesShower from '../../Components/LinesShower';
 
 // redux
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+
 import * as userActions from '../../Store/Actions/user';
 import * as windowActions from '../../Store/Actions/window';
 import * as caretActions from '../../Store/Actions/caret';
-import * as textEditorActions from '../../Store/Actions/textEditor';
+import * as textActions from '../../Store/Actions/inputblock';
 
 //styles
 import './style.scss';
 
 
 class MainPageComponent extends Component{
+    constructor(props){
+        super(props);
+        this.renderBlock = this.renderBlock.bind(this);
+    }
+    renderBlock = (acrive_tab) => {
+        switch(acrive_tab){
+            case 0:
+                return  <InputBlock >
+                            <LinesShower />
+                        </InputBlock>
+            case 1:
+                return  <OutputBlock >
+                            <LinesShower/>
+                        </OutputBlock>
+            default: 
+                return  <EmptyField />
+        }
+    }
     render = () => {
-        const {window, caret, textEditor, textEditorActions, caretActions, windowActions} = this.props
-        var elements_menu = [
-            {
-                id: 1,
-                "name": "File",
-                "img": "https://cdn0.iconfinder.com/data/icons/thin-files-documents/57/thin-071_file_document_code_binary-512.png",
-                "visible_img": true
-            },
-            {
-                id: 2,
-                "name": "Правка",
-                "img": "https://image.flaticon.com/icons/svg/1373/1373015.svg",
-                "visible_img": true,
-            },
-            {
-                id: 3,
-                "name": "Справка",
-                "img": "#",
-                "visible_img": true
-            }
-        ]
         return (
             <div className="main_page_container">
-                <LeftPanel elements_menu={elements_menu}/>
-                <MainBlock 
-                        window={window} 
-                        caret={caret} 
-                        textEditor={textEditor} 
-                        textEditorActions={textEditorActions} 
-                        caretActions={caretActions} 
-                        windowActions={windowActions}/>
+                <LeftPanel />
+                <div className="main_block_" style={{width: '100%'}}>
+                    <TabPanel />
+                    {this.renderBlock(-1)}
+                    <StatusBar/>
+                </div>
             </div>
         )
     }
@@ -66,7 +67,7 @@ function mapDispatchToProps(dispatch) {
         userActions: bindActionCreators(userActions, dispatch),
         windowActions: bindActionCreators(windowActions, dispatch),
         caretActions: bindActionCreators(caretActions, dispatch),
-        textEditorActions: bindActionCreators(textEditorActions, dispatch)
+        textEditorActions: bindActionCreators(textActions, dispatch)
     }
   }
 

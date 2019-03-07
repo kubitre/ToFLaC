@@ -4,14 +4,18 @@ import userState from './user';
 import caretState from './caret';
 import windowState from './window';
 import analysState from './analisys';
-import textEditorState from './textEditor';
+import inputBlockState from './inputblock';
 import fullLeftMenuState from './leftmenu';
+import outputBlockState from './mainblock';
+import linesShowerState from './linesshower';
 
 export default combineReducers({
     userState,
     caretState,
     windowState,
     analysState,
-    textEditorState,
+    inputBlockState,
     fullLeftMenuState,
+    outputBlockState,
+    linesShowerState,
 })

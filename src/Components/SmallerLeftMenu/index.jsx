@@ -5,16 +5,14 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as leftMenuActions from '../../Store/Actions/leftmenu';
 
-
 import './style.scss';
 
-class LeftPanel extends Component {
-    // console.log(this.props);
+class LeftMenu extends Component{
     constructor(props){
-        super(props);
+        super(props);   
 
-        this.handleMouseOver = this.handleMouseOver.bind(this);
         this.handleMouseLeave = this.handleMouseLeave.bind(this);
+        this.handleMouseOver = this.handleMouseOver.bind(this);
     }
     handleMouseOver = (event) => {
         this.props.leftMenuActions.fullLeftMenuOpen();
@@ -23,12 +21,12 @@ class LeftPanel extends Component {
     handleMouseLeave = (event) => {
         this.props.leftMenuActions.fullLeftMenuClose();
     }
-
     render = () => {
-        const {elements_menu} = this.props;
-
-        return (
-            <div className="left_panel_component" onMouseEnter={this.handleMouseOver} onMouseLeave={this.handleMouseLeave}>
+        const {elements_menu} = this.props.leftMenuFull;
+        return(
+            <div className="smaller_panel_menu_component" 
+                onMouseEnter={this.handleMouseOver} 
+                onMouseLeave={this.handleMouseLeave}>
                 {elements_menu.map((element, index)=>{
                     return (
                         <ElementLeftMenu key={index} element={element}/>
@@ -51,4 +49,4 @@ function mapDispatchToProps(dispatch) {
     }
   }
 
-export default connect(mapStateToProps, mapDispatchToProps)(LeftPanel)
+export default connect(mapStateToProps, mapDispatchToProps)(LeftMenu)

@@ -1,14 +1,18 @@
 import React, {Component} from 'react';
 
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
 import './style.scss';
 import ContentEditable from 'react-contenteditable';
 
-export default class InputBlock extends Component {
+
+class InputBlock extends Component {
     constructor(props){
         super(props);
 
         this.handleInputText = this.handleInputText.bind(this);
-        console.log("Params: ", props);
+        // console.log("Params: ", props);
     }
     handleInputText = (event) => {
         var pattern_edit_text = /<div>([0-9a-zA-Z]{0,}|<br>)<\/div>/gm;
@@ -25,16 +29,10 @@ export default class InputBlock extends Component {
     }
 
     render = () => { 
-        const {lines, textEditor} = this.props 
+        const textEditor = "<div><br></div>"
         return(
             <div className="input_block_component">
-                <div className="left_side_line_numbers">
-                    {lines.map((line, index) => {
-                        return(
-                            <div className="element_left_side" key={index}>{line}</div>
-                        )
-                    })}
-                </div>
+                {this.props.children}
                 <ContentEditable 
                             className="input_stream_block" 
                             html={textEditor}
@@ -43,3 +41,19 @@ export default class InputBlock extends Component {
         )
     }
 }
+
+
+
+function mapStateToProps (state) {
+    return {
+        
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        
+    }
+  }
+
+export default connect(mapStateToProps, mapDispatchToProps)(InputBlock)
