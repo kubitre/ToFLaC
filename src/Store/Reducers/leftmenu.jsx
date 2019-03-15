@@ -6,7 +6,7 @@ const initState = {
         {
             id: 1,
             "name": "File",
-            "img": "https://cdn0.iconfinder.com/data/icons/thin-files-documents/57/thin-071_file_document_code_binary-512.png",
+            "img": "http://www.myiconfinder.com/uploads/iconsets/256-256-003ea7262e1af37558f37d061e90e4a8.png",
             "visible_img": true
         },
         {

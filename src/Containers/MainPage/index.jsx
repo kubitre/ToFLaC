@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
-import LeftPanel from '../../Components/LeftPanel';
 import TabPanel from '../../Components/TabPanel';
 import StatusBar from '../../Components/StatusBar';
 import InputBlock from '../../Components/InputBlock';
 import OutputBlock from '../../Components/OutputBlock';
 import EmptyField from '../../Components/EmptyField';
 import LinesShower from '../../Components/LinesShower';
+import LeftMenu from '../../Components/SmallerLeftMenu';
 
 // redux
 import { connect } from 'react-redux';
@@ -42,10 +42,10 @@ class MainPageComponent extends Component{
     render = () => {
         return (
             <div className="main_page_container">
-                <LeftPanel />
-                <div className="main_block_" style={{width: '100%'}}>
+                <LeftMenu />
+                <div className="main_block_">
                     <TabPanel />
-                    {this.renderBlock(-1)}
+                    {this.renderBlock(0)}
                     <StatusBar/>
                 </div>
             </div>

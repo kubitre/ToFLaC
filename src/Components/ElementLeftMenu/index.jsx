@@ -11,10 +11,6 @@ export default function ElementLeftMenu(props) {
                 <div className="img_element" 
                     style={{
                         background: `url(${img})`,
-                        backgroundSize: 'cover',
-                        backgroundRepeat: 'no-repeat',
-                        width: '35px',
-                        height: '35px'
                     }}
                 />
                 :

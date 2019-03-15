@@ -18,6 +18,7 @@ class InputBlock extends Component {
     handleInputText = (event) => {
         var pattern_edit_text = /<div class='line_input'>([0-9a-zA-Z]{0,}|<br>)<\/div>/gm;
         var pattern_line = /<div>/g;
+        var pattern_text = /[0-9a-zA-Z \/;_+=-]+/;
 
         let text = event.target.value  
 
@@ -33,8 +34,15 @@ class InputBlock extends Component {
         let matchDivs = text.match(pattern_line);
         console.log('divs: ', matchDivs);
 
+        let txt = "";
+
         text = text.replace(pattern_line, "<div class='line_input'>");
+        if (!text.includes("<div>")){
+            txt = text.match(pattern_text);    
+        }
+
         this.html = text;
+        console.log("text before regular match: ", text,"\ntext after regular match: ", txt);
                 // console.log("text after transformations: ", text);
         // this.props.caretActions.setNewLinePosition(allMatches.length)
         // console.log("current column: ", allMatches[allMatches.length - 1])
