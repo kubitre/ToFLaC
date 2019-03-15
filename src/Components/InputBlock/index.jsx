@@ -12,31 +12,44 @@ class InputBlock extends Component {
         super(props);
 
         this.handleInputText = this.handleInputText.bind(this);
-        // console.log("Params: ", props);
+        this.html = "<div class='line_input'><br></div>";
+        // console.log"Params: ", props);
     }
     handleInputText = (event) => {
-        var pattern_edit_text = /<div>([0-9a-zA-Z]{0,}|<br>)<\/div>/gm;
-        let text = event.target.value  
-        console.log("handled text: ", text);
-        if (text === null){
+        var pattern_edit_text = /<div class='line_input'>([0-9a-zA-Z]{0,}|<br>)<\/div>/gm;
+        var pattern_line = /<div>/g;
 
+        let text = event.target.value  
+
+        console.log("handled text: ", text);
+        if (text == ""){
+            text = "<div></div>";
         }
+
         let allMatches = text.match(pattern_edit_text)
         console.log("mathces: ", allMatches);
-        console.log("amount lines: ", allMatches.length)
-        this.props.caretActions.setNewLinePosition(allMatches.length)
+        // console.log("amount lines: ", allMatches.length)
+
+        let matchDivs = text.match(pattern_line);
+        console.log('divs: ', matchDivs);
+
+        text = text.replace(pattern_line, "<div class='line_input'>");
+        this.html = text;
+                // console.log("text after transformations: ", text);
+        // this.props.caretActions.setNewLinePosition(allMatches.length)
         // console.log("current column: ", allMatches[allMatches.length - 1])
     }
 
     render = () => { 
-        const textEditor = "<div><br></div>"
+        const {html} = this.props.store;
+
         return(
             <div className="input_block_component">
                 {this.props.children}
                 <ContentEditable 
-                            className="input_stream_block" 
-                            html={textEditor}
-                            onChange={this.handleInputText} />
+                    className="input_stream_block" 
+                    html={html}
+                    onChange={this.handleInputText} />
             </div>
         )
     }
@@ -46,7 +59,7 @@ class InputBlock extends Component {
 
 function mapStateToProps (state) {
     return {
-        
+        store: state.inputBlockState,
     }
 }
 

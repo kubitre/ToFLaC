@@ -20,6 +20,10 @@
         &:focus{
             outline: 0px solid transparent;
         }
+
+        .line_input{
+            padding: 1px 0;
+        }
     }
     .left_side_line_numbers{
         display: flex;

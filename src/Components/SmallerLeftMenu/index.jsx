@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import ElementLeftMenu from '../ElementLeftMenu';
+import classNames from 'classnames'
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -22,9 +23,9 @@ class LeftMenu extends Component{
         this.props.leftMenuActions.fullLeftMenuClose();
     }
     render = () => {
-        const {elements_menu} = this.props.leftMenuFull;
+        const {elements_menu, full} = this.props.leftMenuFull;
         return(
-            <div className="smaller_panel_menu_component" 
+            <div className={classNames("panel_menu_component", {"small": !full})}
                 onMouseEnter={this.handleMouseOver} 
                 onMouseLeave={this.handleMouseLeave}>
                 {elements_menu.map((element, index)=>{

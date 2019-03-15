@@ -4,9 +4,11 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as linesActions from '../../Store/Actions/linesshower';
 
+import './style.scss';
+
 class LinesShower extends Component{
     render = () => {
-        const lines = [];
+        const {lines} = this.props;
         return (
             <div className="lines_shower_block">
                 {lines.map((line, index) => {
@@ -22,7 +24,7 @@ class LinesShower extends Component{
 
 function mapStateToProps (state) {
     return {
-        lines: state.linesShowerState
+        lines: state.linesShowerState.lines
     }
 }
 
