@@ -25,6 +25,7 @@ class MainPageComponent extends Component{
         super(props);
         this.renderBlock = this.renderBlock.bind(this);
     }
+
     renderBlock = (acrive_tab) => {
         switch(acrive_tab){
             case 0:
@@ -40,12 +41,20 @@ class MainPageComponent extends Component{
         }
     }
     render = () => {
+        console.log("Main block: ")
+        console.log(this.props);
+
+        const {state_main_block} = this.props.window;
+        const {files} = this.props.topPanel;
+        if (files.length == 0 && state_main_block != -1){
+            this.props.windowActions.setStateMainBlock(-1);
+        }
         return (
             <div className="main_page_container">
                 <LeftMenu />
                 <div className="main_block_">
                     <TabPanel />
-                    {this.renderBlock(0)}
+                    {this.renderBlock(state_main_block)}
                     <StatusBar/>
                 </div>
             </div>
@@ -59,6 +68,7 @@ function mapStateToProps (state) {
         caret: state.caretState,
         window: state.windowState,
         textEditor: state.textEditorState,
+        topPanel: state.topPanelState,
     }
 }
 

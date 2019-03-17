@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 
 import './style.scss';
 import ContentEditable from 'react-contenteditable';
+import BlockHoverInformation from '../BlockHover';
 
 
 class InputBlock extends Component {
@@ -12,7 +13,6 @@ class InputBlock extends Component {
         super(props);
 
         this.handleInputText = this.handleInputText.bind(this);
-        this.html = "<div class='line_input'><br></div>";
         // console.log"Params: ", props);
     }
     handleInputText = (event) => {
@@ -22,7 +22,6 @@ class InputBlock extends Component {
 
         let text = event.target.value  
 
-        console.log("handled text: ", text);
         if (text == ""){
             text = "<div></div>";
         }
@@ -30,6 +29,10 @@ class InputBlock extends Component {
         let allMatches = text.match(pattern_edit_text)
         console.log("mathces: ", allMatches);
         // console.log("amount lines: ", allMatches.length)
+
+        if (allMatches === null){
+            
+        }
 
         let matchDivs = text.match(pattern_line);
         console.log('divs: ', matchDivs);
@@ -49,25 +52,32 @@ class InputBlock extends Component {
     }
 
     render = () => { 
-        const {html} = this.props.store;
+        const {body_output} = this.props.store;
+        const {status_hover} = this.props.statusStore;
 
         return(
             <div className="input_block_component">
                 {this.props.children}
                 <ContentEditable 
                     className="input_stream_block" 
-                    html={html}
+                    html={body_output}
                     onChange={this.handleInputText} />
+                {
+                    status_hover ? 
+                    <BlockHoverInformation />
+                    :
+                    null
+                }
             </div>
         )
     }
 }
 
 
-
 function mapStateToProps (state) {
     return {
         store: state.inputBlockState,
+        statusStore: state.statusBarState,
     }
 }
 

@@ -1,5 +1,5 @@
 import '../Constants/window';
-import { PROJECT_PAGE_LOCATION, ABOUT_PROGRAMM, SAVE_AS_FILE_TO_LOCAL_DISK, OPEN_FILE_FROM_LOCAL_DISK, CREATE_NEW_CODE_FILE_WINDOW, HELPER_PROGRAMM } from '../Constants/window';
+import { PROJECT_PAGE_LOCATION, ABOUT_PROGRAMM, SAVE_AS_FILE_TO_LOCAL_DISK, OPEN_FILE_FROM_LOCAL_DISK, CREATE_NEW_CODE_FILE_WINDOW, HELPER_PROGRAMM, STATE_MAIN_BLOCK } from '../Constants/window';
 
 export function openProjectLocation(state) {
     return {
@@ -22,10 +22,10 @@ export function saveAsProgramModalWindow(state){
     }
 }
 
-export function openOpenModalWindow(state) {
+export function openOpenModalWindow() {
     return {
         type: OPEN_FILE_FROM_LOCAL_DISK,
-        payload: state
+        payload: true
     }
 }
 
@@ -40,5 +40,12 @@ export function openHelperModalWindow(state){
     return {
         type: HELPER_PROGRAMM,
         payload: state
+    }
+}
+
+export function setStateMainBlock(state_number){
+    return {
+        "type": STATE_MAIN_BLOCK,
+        "payload": state_number,
     }
 }

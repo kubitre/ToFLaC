@@ -1,0 +1,40 @@
+.modal_window{
+    display: flex;
+    flex-direction: column;
+
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;   
+
+    justify-content: center;
+    align-items: center;
+
+    min-height: 100%;
+    min-width: 100%;
+
+    .closing_file{
+        position: relative;
+        right: -35px;
+        top: 4px;
+        width: 28px;
+        height: 28px;
+        opacity: 0.3;
+    }
+    .closing_file:hover {
+        opacity: 1;     
+    }
+    .closing_file:before, .closing_file:after {
+        position: absolute;
+        left: 10px;
+        content: ' ';
+        height: 16px;
+        width: 2px;
+        background-color: #fff;
+    }
+    .closing_file:before {
+        transform: rotate(45deg);
+    }
+    .closing_file:after {
+        transform: rotate(-45deg);
+    }
+}

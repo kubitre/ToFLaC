@@ -1,31 +1,24 @@
-import {FULL_LEFT_MENU_CLOSE, FULL_LEFT_MENU_OPEN} from '../Constants/leftmenu';
+import {STATUS_HOVER, STATUS_CLOSE} from '../Constants/statusbar';
 
 const initState = {
-    "lang": "None",
-    "warnings": 0,
-    "errors": 0,
-    "errors_hover": false,
-    "warnings_hover": false,
+    "lang": "c++",
+    "warnings_amount": 0,
+    "errors_amount": 0,
+    "status_hover": false,
+    "errors": [
+        "строка 15, не указан тип"
+    ],
+    "warnings": [],
 };
 
 export default function statusBarState(state = initState, action){
-    switch(action.type){
-        case HOVER_WARNINGS: 
-            return {...state, warnings_hover: action.payload}
-        case CLOSE_WARNINGS:
-            return {...state, warnings_hover: action.payload}
-        case HOVER_ERRORS: 
-            return {...state, errors_hover: action.payload}
-        case CLOSE_ERRORS:
-            return {...state, errors_hover: action.payload}
-        case ADD_WARNING: 
-            return {...state, warnings: action.payload}
-        case REMOVE_WARNING:
-            return {...state, warnings: action.payload}
-        case ADD_ERROR:
-            return {...state, errors: action.payload}
-        case REMOVE_ERROR: 
-            return {...state, errors: action.payload}
+    const {type, payload} = action;
+
+    switch(type){
+        case STATUS_HOVER:
+        case STATUS_CLOSE:
+            return {...state, status_hover: payload.status_hover}
+        
         default:
             return state;
     }

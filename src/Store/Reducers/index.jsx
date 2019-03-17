@@ -8,6 +8,9 @@ import inputBlockState from './inputblock';
 import fullLeftMenuState from './leftmenu';
 import outputBlockState from './mainblock';
 import linesShowerState from './linesshower';
+import statusBarState from './statusbar';
+import topPanelState from './toppanel';
+import modalWindowState from './modalwindow';
 
 export default combineReducers({
     userState,
@@ -18,4 +21,7 @@ export default combineReducers({
     fullLeftMenuState,
     outputBlockState,
     linesShowerState,
+    statusBarState,
+    topPanelState,
+    modalWindowState,
 })
