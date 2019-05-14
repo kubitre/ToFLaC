@@ -4,8 +4,7 @@ export function copyTextInputBlock(text){
     return {
         "type": COPY_TEXT_INPUT_BLOCK,
         "payload": {
-            "body_output": text.body_output,
-            "body_for_analys": text.body_for_analys,
+            "code": text,
         }
     }
 }
@@ -14,8 +13,7 @@ export function cutTextInputBlock(text){
     return {
         "type": CUT_TEXT_INPUT_BLOCK,
         "payload": {
-            "body_output": text.body_output,
-            "body_for_analys": text.body_for_analys,
+            "code": text,
         }
     }
 }
@@ -24,8 +22,7 @@ export function pasteTextInputBlock(text){
     return {
         "type": PASTE_TEXT_INPUT_BLOCK,
         "payload": {
-            "body_output": text.body_output,
-            "body_for_analys": text.body_for_analys,
+            "code": text,
         }
     }
 }
@@ -34,8 +31,8 @@ export function addTextToInputBlock(text){
     return {
         "type": ADD_TEXT_INPUT_BLOCK,
         "payload": {
-            "body_output": text.body_output,
-            "body_for_analys": text.body_for_analys,
+            
+            "code": text,
         }
     }
 }
@@ -44,8 +41,8 @@ export function flushTextFromInputBlock(text){
     return {
         "type": FLUSH_TEXT_INPUT_BLOCK,
         "payload": {
-            "body_output": text.body_output,
-            "body_for_analys": text.body_for_analys,
+            
+            "code": text,
         }
     }
 }

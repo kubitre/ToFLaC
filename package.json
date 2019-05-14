@@ -5,10 +5,12 @@
   "dependencies": {
     "bootstrap": "^4.2.1",
     "classnames": "^2.2.6",
+    "monaco-themes": "^0.2.5",
     "node-sass": "^4.11.0",
     "react": "^16.7.0",
     "react-contenteditable": "^3.2.6",
     "react-dom": "^16.7.0",
+    "react-monaco-editor": "^0.25.1",
     "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.3",

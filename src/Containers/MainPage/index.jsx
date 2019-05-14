@@ -6,6 +6,7 @@ import OutputBlock from '../../Components/OutputBlock';
 import EmptyField from '../../Components/EmptyField';
 import LinesShower from '../../Components/LinesShower';
 import LeftMenu from '../../Components/SmallerLeftMenu';
+import TopMenu from '../../Components/TopMenu/Entry';
 
 // redux
 import { connect } from 'react-redux';
@@ -18,6 +19,7 @@ import * as textActions from '../../Store/Actions/inputblock';
 
 //styles
 import './style.scss';
+import ModalWindow from '../../Components/ModalWindow';
 
 
 class MainPageComponent extends Component{
@@ -41,21 +43,34 @@ class MainPageComponent extends Component{
         }
     }
     render = () => {
-        console.log("Main block: ")
-        console.log(this.props);
+        // console.log("Main block: ")
+        // console.log(this.props);
 
-        const {state_main_block} = this.props.window;
-        const {files} = this.props.topPanel;
-        if (files.length == 0 && state_main_block != -1){
-            this.props.windowActions.setStateMainBlock(-1);
-        }
+        // if (files.length == 0 && state_main_block != -1){
+        //     this.props.windowActions.setStateMainBlock(-1);
+        // }
+
+        console.log("modal window state: ", this.props.storeModalWindow)
+
+        const {open} = this.props.storeModalWindow;
         return (
             <div className="main_page_container">
-                <LeftMenu />
-                <div className="main_block_">
-                    <TabPanel />
-                    {this.renderBlock(state_main_block)}
-                    <StatusBar/>
+                {open ? 
+                    <ModalWindow />
+                    :
+                    null
+                }
+                <div className="vertical">
+                    <TopMenu/>
+                    <div className="horizontal">
+                        <LeftMenu />
+                        <div className="main_block_">
+                            <TabPanel />
+                            {this.renderBlock(0)}
+                            {this.renderBlock(1)}
+                            <StatusBar/>
+                        </div>
+                    </div>
                 </div>
             </div>
         )
@@ -64,20 +79,12 @@ class MainPageComponent extends Component{
 
 function mapStateToProps (state) {
     return {
-        user: state.userState,
-        caret: state.caretState,
-        window: state.windowState,
-        textEditor: state.textEditorState,
-        topPanel: state.topPanelState,
+        storeModalWindow: state.MWI_modalWindow
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        userActions: bindActionCreators(userActions, dispatch),
-        windowActions: bindActionCreators(windowActions, dispatch),
-        caretActions: bindActionCreators(caretActions, dispatch),
-        textEditorActions: bindActionCreators(textActions, dispatch)
     }
   }
 

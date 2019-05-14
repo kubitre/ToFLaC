@@ -3,25 +3,37 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import * as panelActions from '../../Store/Actions/toppanel';
-import * as windowActions from '../../Store/Actions/window';
+import * as FileActions from '../../Store/Parts/TopBar/actions';
+import * as InputActions from '../../Store/Parts/Input/actions';
 
 import './style.scss';
 
 class TabPanel extends Component {
+    handleClick(event){
+        let ident = event.target.getAttribute("ident");
+        if (ident === null){
+            let closer = event.target.getAttribute("closer")
+            this.props.fileActions.CloseFile((closer));
+            this.props.inputActions.ChangeContext(closer - 1);
+        } else {
+            this.props.fileActions.SetActiveTab(ident);
+            this.props.inputActions.ChangeContext(ident);
+        }
+    }
     render = () => {
-        console.log(this.props.store)
-        const {files, active_file} = this.props.store;
+        console.log(this.props)
+        const {openedFiles, active_file} = this.props.store;
+
         return (
-            files.length === 0 ? 
+            openedFiles.length === 0 ? 
             null:
 
             <div className="tab_panel_component">
                 {
-                    files.map((item, index) => 
-                        <div className={active_file === item.id ? "element_tab _active": "element_tab"} key={index}>
-                            <div className="text_name">{item.filename}</div>
-                            <span className="closing_file" onMouseDown={() => this.props.panelActions.closeFile(item.id)}></span>
+                    openedFiles.map((item, index) => 
+                        <div className={active_file === item.id ? "element_tab _active": "element_tab"} onClick={this.handleClick.bind(this)} key={index} ident={item.id}>
+                            <div className="text_name" ident={item.id}>{item.name}</div>
+                            <span className="closing_file" closer={item.id}></span>
                         </div>    
                     )
                 }
@@ -35,15 +47,15 @@ class TabPanel extends Component {
 
 function mapStateToProps (state) {
     return {
-        store: state.topPanelState,
+        store: state.TBI_topBar,
+        inputSt: state.ISI_inputState,
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        panelActions: bindActionCreators(panelActions, dispatch),
-        windowActions: bindActionCreators(windowActions, dispatch),
-
+        fileActions: bindActionCreators(FileActions, dispatch),
+        inputActions: bindActionCreators(InputActions, dispatch)
     }
 }
 

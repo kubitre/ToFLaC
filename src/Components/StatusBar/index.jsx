@@ -8,37 +8,31 @@ import * as statusActions from '../../Store/Actions/statusbar';
 import './style.scss';
 
 class StatusBar extends Component{
-    constructor(props){
-        super(props);
-    }
-
 
     render = () => {
         const {lang, warnings_amount, errors_amount} = this.props.store;
-        const {line, col} = this.props.caret;
-        const {state_main_block} = this.props.window;
+        // const {line, col} = this.props.caret;
+        // const {state_main_block} = this.props.window;
 
         console.log(this.props);
         // const {}
         return (
-            state_main_block == -1 ?
+            // state_main_block == -1 ?
 
-            null
-            :
+            // null
+            // :
             <div className="status_bar_component">
                 <div className="left_side">
                     <div className="language">lang: {lang}</div>
                 </div>
                 <div className="right_side">
                     <div className="info_block"
-                         onMouseEnter={() => this.props.statusActions.setHoverPanel()}
-                         onMouseLeave={() => setTimeout(this.props.statusActions.setClosePanel(), 500)}
                          >
                         <div className="errors" >{errors_amount} Errors&#8195;</div>
                         <span className="separator">|</span>
                         <div className="warnings">&#8195;{warnings_amount} Warnings</div>
                     </div>
-                    <div className="caret_info">Line: {line} | Col: {col}</div>
+                    {/* <div className="caret_info">Line: {line} | Col: {col}</div> */}
                 </div>
             </div>
         )
@@ -48,15 +42,13 @@ class StatusBar extends Component{
 
 function mapStateToProps (state) {
     return {
-        store : state.statusBarState,
-        caret: state.caretState,
-        window: state.windowState,
+        store : state.SBI_statusBar,
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        statusActions: bindActionCreators(statusActions, dispatch)   
+        // statusActions: bindActionCreators(statusActions, dispatch)   
     }
   }
 

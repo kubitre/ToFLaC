@@ -5,7 +5,7 @@
     display: flex;
     flex-direction: row;
     width: 100%;
-    height: 100%;
+    height: 70%;
     font-family: 'Source Code Pro', monospace;
     
     .input_stream_block{
@@ -15,7 +15,7 @@
         color: #586e75;
         font-weight: 600;
         overflow: auto;
-        max-height: 95vh;
+        max-height: 80%;
         
         &:focus{
             outline: 0px solid transparent;

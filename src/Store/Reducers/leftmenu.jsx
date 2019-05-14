@@ -6,8 +6,8 @@ const initState = {
         {
             id: 1,
             "name": "File",
-            "img": "http://www.myiconfinder.com/uploads/iconsets/256-256-003ea7262e1af37558f37d061e90e4a8.png",
-            "visible_img": true
+            "img": "img/file.png",
+            "visible_img": true,
         },
         {
             id: 2,
@@ -18,6 +18,12 @@ const initState = {
         {
             id: 3,
             "name": "Справка",
+            "img": "https://support.apple.com/content/dam/edam/applecare/images/en_US/osx/featured-content-forgot-id-icon_2x.png",
+            "visible_img": true
+        },
+        {
+            id: 4,
+            "name": "Выполнить",
             "img": "https://support.apple.com/content/dam/edam/applecare/images/en_US/osx/featured-content-forgot-id-icon_2x.png",
             "visible_img": true
         }

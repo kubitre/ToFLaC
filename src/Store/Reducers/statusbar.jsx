@@ -1,4 +1,4 @@
-import {STATUS_HOVER, STATUS_CLOSE} from '../Constants/statusbar';
+import {STATUS_HOVER, STATUS_CLOSE, ADD_WARNINGS_AND_ERRORS_AMOUNTS} from '../Constants/statusbar';
 
 const initState = {
     "lang": "c++",
@@ -19,6 +19,8 @@ export default function statusBarState(state = initState, action){
         case STATUS_CLOSE:
             return {...state, status_hover: payload.status_hover}
         
+        case ADD_WARNINGS_AND_ERRORS_AMOUNTS:
+            return {...state, errors_amount: payload.errors, warnings_amount: payload.warnings}
         default:
             return state;
     }

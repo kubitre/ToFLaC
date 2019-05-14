@@ -2,10 +2,10 @@ import { NEW_FILE, CLOSE_FILE, SET_FILE_ACTIVE} from "../Constants/toppanel";
 
 const initState = {
     "files": [
-        // {
-        //     "id": 0,
-        //     "filename": "test1.cpp"
-        // },
+        {
+            "id": 0,
+            "filename": "test1.cpp"
+        },
         // {
         //     "id": 1,
         //     "filename": "test2.cpp"

@@ -1,34 +1,16 @@
 import React, {Component} from 'react';
 import ElementLeftMenu from '../ElementLeftMenu';
-import classNames from 'classnames'
 
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import * as leftMenuActions from '../../Store/Actions/leftmenu';
 
 import './style.scss';
 
 class LeftMenu extends Component{
-    constructor(props){
-        super(props);   
-
-        this.handleMouseLeave = this.handleMouseLeave.bind(this);
-        this.handleMouseOver = this.handleMouseOver.bind(this);
-    }
-    handleMouseOver = (event) => {
-        this.props.leftMenuActions.fullLeftMenuOpen();
-    }
-
-    handleMouseLeave = (event) => {
-        this.props.leftMenuActions.fullLeftMenuClose();
-    }
     render = () => {
-        const {elements_menu, full} = this.props.leftMenuFull;
+        const {elements} = this.props.leftMenuFull;
         return(
-            <div className={classNames("panel_menu_component", {"small": !full})}
-                onMouseEnter={this.handleMouseOver} 
-                onMouseLeave={this.handleMouseLeave}>
-                {elements_menu.map((element, index)=>{
+            <div className="panel_menu_component small">
+                {elements.map((element, index)=>{
                     return (
                         <ElementLeftMenu key={index} element={element}/>
                     )
@@ -40,13 +22,12 @@ class LeftMenu extends Component{
 
 function mapStateToProps (state) {
     return {
-        leftMenuFull: state.fullLeftMenuState
+        leftMenuFull: state.LMI_leftMenu
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        leftMenuActions: bindActionCreators(leftMenuActions, dispatch)
     }
   }
 
