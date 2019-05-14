@@ -3,12 +3,13 @@ package main
 import (
 	"log"
 	"net/http"
+	"tflac_cw/kernel"
 	"tflac_cw/routers"
 
 	"github.com/rs/cors"
 )
 
-func main() {
+func entryPointStart() {
 	entry := &routers.EntryPoint{}
 	entry = entry.Init()
 
@@ -23,4 +24,16 @@ func main() {
 	if err := http.ListenAndServe(":9995", handler); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func testkernekProcess() {
+	ker := &kernel.Kernel{}
+	ker = ker.New()
+
+	ker.Input("flot lol \n int test;")
+}
+
+func main() {
+	// entryPointStart()
+	testkernekProcess()
 }

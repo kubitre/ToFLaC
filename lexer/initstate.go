@@ -1,5 +1,9 @@
 package lexer
 
+import (
+	"tflac_cw/token"
+)
+
 /*InitState - начальное состояние автомата*/
 type InitState struct {
 	StateName string
@@ -40,6 +44,13 @@ func (state *InitState) NextState(states *AllStates, context Context, mark rune)
 		context.SetState(states.POINTER)
 		return
 	default:
+		for _, val := range []rune{'~', '`', '!', '@', '#', '$', '%', '^', '&', '(', ')', '{', '}', '[', ']', '?', '<', '>'} {
+			if mark == val {
+				context.SetMem(token.ERROR)
+				context.SetState(states.INIT)
+				return
+			}
+		}
 		context.SetState(states.IDENT)
 		return
 	}

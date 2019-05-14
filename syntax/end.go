@@ -16,7 +16,38 @@ func (state *EndState) New() *EndState {
 InitState - в начальное состояние
 */
 func (state *EndState) NextState(states *AllStates, context Context, tok token.Token) {
-	context.SetState(states.INIT)
+	switch tok.Type {
+	case token.ENDSTATEMENT:
+		context.NewError(tok, "Unexpected end, expected either a space or type of new identifier, or transfer to a new line", 1, 2, -1)
+		context.SetState(states.ERROR)
+		return
+	case token.ERROR:
+		context.NewError(tok, "Unable to handle token", 1, 2, -1)
+		context.SetState(states.ERROR)
+		return
+	case token.COMMA:
+		context.NewError(tok, "comma after; is prohibited", 1, 2, -1)
+		context.SetState(states.ERROR)
+		return
+
+	case token.POINTER:
+		context.NewError(tok, "you should add type before declaring this pointer!", 1, 2, -1)
+		context.SetState(states.ERROR)
+		return
+
+	case token.NONTYPE:
+		context.NewError(tok, "you can use varible types, spaces, newlines but you use unhandled token!", 1, 2, -1)
+		context.SetState(states.ERROR)
+		return
+
+	case token.IDENTIFIER:
+		context.NewError(tok, "you should add type before this identificator", 1, 2, -1)
+		context.SetState(states.ERROR)
+		return
+	default:
+		context.SetState(states.INIT)
+		return
+	}
 }
 
 /*GetCurrentStateName - получить текущее имя состояния*/

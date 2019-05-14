@@ -27,10 +27,23 @@ func (state *IdentState) NextState(states *AllStates, context Context, mark rune
 	case ';':
 		context.SetMem(token.IDENTIFIER)
 		context.SetState(states.INIT)
+		return
+	case 10:
+		context.SetMem(token.IDENTIFIER)
+		context.SetState(states.INIT)
+		return
 	case ',':
 		context.SetMem(token.IDENTIFIER)
 		context.SetState(states.INIT)
+		return
 	default:
+		for _, val := range []rune{'!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '{', '}', '[', ']', '?', '`', '~'} {
+			if mark == val {
+				context.SetMem(token.IDENTIFIER)
+				context.SetState(states.INIT)
+				return
+			}
+		}
 		context.SetCache(mark)
 		context.SetState(states.IDENT)
 	}

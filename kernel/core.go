@@ -13,6 +13,7 @@ import (
 type Kernel struct {
 	LexerAnalys  *lexer.Lexer
 	SyntaxAnalys *syntax.SyntaxAnalys
+	RepairTokens []token.Token
 }
 
 const (
@@ -31,13 +32,20 @@ func (ker *Kernel) New() *Kernel {
 
 /*Input - ввод нового текста*/
 func (ker *Kernel) Input(str string) {
-	ker.LexerAnalys.New(false)
+	ker.LexerAnalys.New(true)
 	ker.LexerAnalys.Input(str)
 	ker.LexerAnalys.Tokenize()
 
-	ker.print()
+	ker.print(ker.LexerAnalys.Tokens)
 	ker.SyntaxAnalys.Analys(ker.LexerAnalys.Tokens)
 	ker.printErrors()
+	ker.printRepairedSentence()
+	// ker.Neitralize()
+	// ker.print(ker.RepairTokens)
+}
+
+func (ker *Kernel) printRepairedSentence() {
+
 }
 
 func (ker *Kernel) printErrors() {
@@ -49,8 +57,68 @@ func (ker *Kernel) printErrors() {
 	}
 }
 
-func (ker *Kernel) print() {
-	for _, val := range ker.LexerAnalys.Tokens {
+// func (ker *Kernel) Neitralize() {
+// 	var tokensRepaired []token.Token
+// 	for _, val := range ker.SyntaxAnalys.SyntaxAnalyser.Errors {
+// 		fmt.Println(prefix, prefix_syntax, val)
+// 		switch val.Token.Action {
+// 		case 0:
+// 			var tokenTemp token.Token
+// 			var indexTemp int
+// 			for index, val2 := range ker.LexerAnalys.Tokens {
+
+// 				if index <= val.Token.Index {
+// 					if index == val.Token.Index {
+// 						tokenTemp = val2
+// 						indexTemp = index
+// 					} else {
+// 						tokensRepaired = append(tokensRepaired, val2)
+// 					}
+
+// 				} else {
+// 					break
+// 				}
+// 			}
+
+// 			switch val.Token.Position {
+// 			case -1:
+// 				break
+// 			case 0:
+// 				tokNew := ker.GetTokenByTypeNumber(val.Token.Token)
+// 				tokNew.Index = indexTemp
+// 				tokensRepaired = append(tokensRepaired, *tokNew)
+// 				tokenTemp.Index = indexTemp + 1
+// 				tokensRepaired = append(tokensRepaired, tokenTemp)
+// 			case 1:
+// 				tokNew := ker.GetTokenByTypeNumber(val.Token.Token)
+// 				tokenTemp.Index = indexTemp
+// 				tokensRepaired = append(tokensRepaired, tokenTemp)
+// 				tokNew.Index = indexTemp + 1
+// 				tokensRepaired = append(tokensRepaired, *tokNew)
+
+// 			}
+
+// 		case 1:
+// 			for index, val2 := range ker.LexerAnalys.Tokens {
+// 				if index < val.Token.Index {
+// 					tokensRepaired = append(tokensRepaired, val2)
+// 				} else {
+// 					if index == val.Token.Index {
+// 						continue
+// 					} else {
+// 						val2.Index--
+// 						tokensRepaired = append(tokensRepaired, val2)
+// 					}
+// 				}
+// 			}
+// 		}
+// 	}
+
+// 	ker.RepairTokens = tokensRepaired
+// }
+
+func (ker *Kernel) print(tokens []token.Token) {
+	for _, val := range tokens {
 		switch val.Type {
 		case token.COMMA:
 			log.Println("[TOKEN: COMMA, POSITION: {" + strconv.Itoa(val.StartPosition) + ";" + strconv.Itoa(val.EndPosition) + "}]")

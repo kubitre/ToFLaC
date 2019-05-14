@@ -31,7 +31,7 @@ func (state *IntState) Reset() {
 func (state *IntState) GetLastRune() rune {
 	pos := state.CurrentPosition
 
-	if state.CurrentPosition+1 >= state.Length {
+	if state.CurrentPosition == state.Length-1 {
 		state.StateParse = true
 	} else {
 		state.CurrentPosition++
@@ -53,20 +53,29 @@ func (state *IntState) NextState(states *AllStates, context Context, mark rune) 
 	log.Println("[LEXER_INT]: Get last rune: ", string(currentRune))
 
 	if state.StateParse {
+		if strings.Compare(string(mark), string(currentRune)) == 0 {
+			context.SetMem(token.INT)
+			state.Reset()
 
-		context.SetMem(token.INT)
-		state.Reset()
-
-		context.SetState(states.INIT)
+			context.SetState(states.INIT)
+		} else {
+			context.SetMem(token.ERROR)
+			context.SetTokenForRepairStage(token.INT)
+			context.SetState(states.INIT)
+		}
 		return
-	}
-
-	context.SetCache(mark)
-
-	if strings.Compare(string(mark), string(currentRune)) == 0 {
-		context.SetState(states.INT)
 	} else {
-		context.SetState(states.IDENT)
+		context.SetCache(mark)
+
+		if strings.Compare(string(mark), string(currentRune)) == 0 {
+			context.SetState(states.INT)
+		} else {
+			// context.SetMem(token.ERROR)
+			if state.CurrentPosition >= state.Length-2 {
+				context.SetTokenForRepairStage(token.INT)
+			}
+			context.SetState(states.IDENT)
+		}
 	}
 }
 

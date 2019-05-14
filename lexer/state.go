@@ -14,11 +14,13 @@ type (
 
 	/*AutomatState - Текущее состояние автомата*/
 	AutomatState struct {
-		State       AutomatInterface // текущее состояние автомата
-		AllStates   *AllStates       // сборка всех состояний автомата
-		Buffer      int              // буфер для автомата
-		CacheMemory string           // текущее значение токена
-		Logs        []string         // логи
+		State                AutomatInterface // текущее состояние автомата
+		AllStates            *AllStates       // сборка всех состояний автомата
+		Buffer               int              // буфер для автомата
+		BufferForRepairStage int              // заменяемый токен
+		NeedForRepairChange  bool             // требуется ли замена на BufferForRepairStage
+		CacheMemory          string           // текущее значение токена
+		Logs                 []string         // логи
 	}
 
 	/*Context - контекст для обращения к изменению состояния из состояния*/
@@ -28,12 +30,27 @@ type (
 		SetCache(mark rune)                 // установка значения токена
 		GetLog() string                     // получить логи
 		SetMem(value int)                   // устанлока текущего выделяемого типа
+		SetTokenForRepairStage(typ int)     // установка значения для токена после синтаксического анализа
+		ChangeNeedRepair()                  // изменить значение добавления изменения на стадии исправления ошибок
 		NewSymb(mark rune)                  // новый вход
 		ClearLogs()                         // чистка логов\
 		Reset()                             // сброс состояния автомата
 	}
 )
 
+/*ChangeNeedRepair - изменить текущее состояние флага*/
+func (automat *AutomatState) ChangeNeedRepair() {
+	automat.NeedForRepairChange = false
+	automat.BufferForRepairStage = 0
+}
+
+/*SetTokenForRepairStage - установка токена для его вставки на этапе нейтрализации ошибок после синтаксического анализа*/
+func (automat *AutomatState) SetTokenForRepairStage(typ int) {
+	automat.NeedForRepairChange = true
+	automat.BufferForRepairStage = typ
+}
+
+/*Reset - сброс значений текущего автомата*/
 func (automat *AutomatState) Reset() {
 	automat.State = automat.AllStates.INIT
 	automat.Buffer = token.NONTYPE

@@ -55,9 +55,12 @@ func (entry *EntryPoint) HandledNewTaskForAnalys(w http.ResponseWriter, r *http.
 			Errors: entry.KernelLanguage.LexerAnalys.GetErrors(),
 		},
 		SyntaxAnalysPart: models.SyntaxPart{
-			Errors: entry.KernelLanguage.SyntaxAnalys.GetErrors(),
+			Errors:   entry.KernelLanguage.SyntaxAnalys.GetErrors(),
+			Warnings: entry.KernelLanguage.SyntaxAnalys.GetWarnings(),
+			Repair:   entry.KernelLanguage.SyntaxAnalys.GetRepaired(),
 		},
 	}
+	entry.KernelLanguage.SyntaxAnalys.Reset()
 
 	fmt.Println("Result: ", response)
 

@@ -15,6 +15,8 @@ type Lexer struct {
 	Errors          []error_.ErrorModel // слайс с ошибками на этапе лексического анализа
 	Length          int                 // длина
 	Position        int                 // текущая позиция в вводимой строке
+	CurrentLine     int                 // текущая строка
+	CurrentColumn   int                 // текущий номер символа в строке
 	LexerAutomat    *AutomatState       // конечный автомат
 }
 
@@ -33,7 +35,25 @@ func (lex *Lexer) New(debug bool) {
 func (lex *Lexer) Input(str string) {
 	lex.AnalysingString = str
 	lex.Position = 0
+	lex.CurrentLine = 1
+	lex.CurrentColumn = 0
 	lex.Length = len(lex.AnalysingString)
+}
+
+/*AddNewLine - добавление новой строки*/
+func (lex *Lexer) AddNewLine() {
+	lex.CurrentLine = lex.CurrentLine + 1
+	lex.CurrentColumn = 1
+}
+
+/*AddNewColumn - добавление нового символа*/
+func (lex *Lexer) AddNewColumn() {
+	lex.CurrentColumn = lex.CurrentColumn + 1
+}
+
+/*RemoveOneColumnPosition - удаление одной позиции в строке*/
+func (lex *Lexer) RemoveOneColumnPosition() {
+	lex.CurrentColumn = lex.CurrentColumn - 1
 }
 
 /*Peek - получить символ в позиции lex.Position + position*/
@@ -49,14 +69,20 @@ func (lex *Lexer) Peek(position int) (rune, error) {
 
 /*Tokenize - токенизация входной строки*/
 func (lex *Lexer) Tokenize() {
+	tokenNumber := 0
 	startPosition := 0
 	endPosition := 0
 	newstate := false
+
 	for lex.Position < lex.Length {
 		currentRune, _ := lex.Peek(0)
+
+		lex.AddNewColumn()
+
 		if newstate {
 			startPosition = lex.Position
 			newstate = false
+			tokenNumber++
 		}
 		endPosition = lex.Position
 
@@ -67,53 +93,64 @@ func (lex *Lexer) Tokenize() {
 
 		switch lex.LexerAutomat.Buffer {
 		case token.POINTER:
-			lex.AddTokenReservered(token.POINTER, startPosition, endPosition)
+			lex.AddTokenReservered(token.POINTER, startPosition, endPosition, tokenNumber)
 			newstate = true
 			break
 
 		case token.FLOAT:
-			lex.AddTokenReservered(token.FLOAT, startPosition, endPosition)
+			lex.AddTokenReservered(token.FLOAT, startPosition, endPosition, tokenNumber)
 			newstate = true
 
 			break
 
 		case token.INT:
-			lex.AddTokenReservered(token.INT, startPosition, endPosition)
+			lex.AddTokenReservered(token.INT, startPosition, endPosition, tokenNumber)
 			newstate = true
 
 			break
 
 		case token.ENDSTATEMENT:
-			lex.AddTokenReservered(token.ENDSTATEMENT, startPosition, endPosition)
+			lex.AddTokenReservered(token.ENDSTATEMENT, startPosition, endPosition, tokenNumber)
 			newstate = true
 
 			break
 
 		case token.IDENTIFIER:
-			lex.AddTokenUnreserved(token.IDENTIFIER, startPosition, endPosition, lex.LexerAutomat.CacheMemory)
+			if lex.LexerAutomat.NeedForRepairChange {
+				lex.AddTokenReservedWithRepairSettings(token.IDENTIFIER, startPosition, endPosition, lex.LexerAutomat.CacheMemory, tokenNumber, 2, lex.LexerAutomat.BufferForRepairStage)
+				lex.LexerAutomat.ChangeNeedRepair()
+			} else {
+				lex.AddTokenUnreserved(token.IDENTIFIER, startPosition, endPosition, lex.LexerAutomat.CacheMemory, tokenNumber)
+			}
 			lex.PrevSym()
+			lex.RemoveOneColumnPosition()
+
 			newstate = true
 
 			break
 		case token.SPACE:
-			lex.AddTokenReservered(token.SPACE, startPosition, endPosition)
+			lex.AddTokenReservered(token.SPACE, startPosition, endPosition, tokenNumber)
 			newstate = true
 
 			break
 
 		case token.NEWLINE:
-			lex.AddTokenReservered(token.NEWLINE, startPosition, endPosition)
+			lex.AddTokenReservered(token.NEWLINE, startPosition, endPosition, tokenNumber)
 			newstate = true
+			lex.AddNewLine()
 
 			break
 
 		case token.COMMA:
-			lex.AddTokenReservered(token.COMMA, startPosition, endPosition)
+			lex.AddTokenReservered(token.COMMA, startPosition, endPosition, tokenNumber)
 			newstate = true
 
 			break
 		case token.ERROR:
-			lex.AddTokenReservered(token.ERROR, startPosition, endPosition)
+			lex.AddTokenUnreserved(token.ERROR, startPosition, endPosition, lex.LexerAutomat.CacheMemory, tokenNumber)
+			if endPosition != startPosition {
+				lex.PrevSym()
+			}
 			newstate = true
 
 			break
@@ -132,28 +169,36 @@ func (lex *Lexer) Tokenize() {
 		// }
 	}
 	if lex.LexerAutomat.CacheMemory != "" {
-		lex.AddTokenUnreserved(lex.LexerAutomat.Buffer, startPosition, lex.Position, lex.LexerAutomat.CacheMemory)
+		lex.AddTokenUnreserved(lex.LexerAutomat.Buffer, startPosition, lex.Position, lex.LexerAutomat.CacheMemory, tokenNumber)
 	}
 
 	lex.AggregateErrors()
 }
 
 /*AddTokenReservered - добавить зарезервированный токен в слайс с токенами*/
-func (lex *Lexer) AddTokenReservered(tokenType, start, end int) {
+func (lex *Lexer) AddTokenReservered(tokenType, start, end, tokenNumber int) {
 	if lex.Debug {
 		log.Println(prefix + lex.LexerAutomat.GetLog())
 	}
-	lex.Tokens = append(lex.Tokens, token.Token{Value: "", Type: tokenType, StartPosition: start, EndPosition: end})
+	lex.Tokens = append(lex.Tokens, token.Token{Value: "", Type: tokenType, StartPosition: start, EndPosition: end, Line: lex.CurrentLine, Column: lex.CurrentColumn - (end - start), Index: tokenNumber})
 	lex.LexerAutomat.Reset()
 }
 
 /*AddTokenUnreserved - добавить незарезервированный токен в слайс с токенами*/
-func (lex *Lexer) AddTokenUnreserved(tokenType, start, end int, val string) {
+func (lex *Lexer) AddTokenUnreserved(tokenType, start, end int, val string, tokenNumber int) {
 	if lex.Debug {
 		log.Println(prefix + lex.LexerAutomat.GetLog())
 	}
-	log.Println(prefix + lex.LexerAutomat.GetLog())
-	lex.Tokens = append(lex.Tokens, token.Token{Value: val, Type: tokenType, StartPosition: start, EndPosition: end})
+	lex.Tokens = append(lex.Tokens, token.Token{Value: val, Type: tokenType, StartPosition: start, EndPosition: end, Line: lex.CurrentLine, Column: lex.CurrentColumn - (end - start), Index: tokenNumber})
+	lex.LexerAutomat.Reset()
+}
+
+/*AddTokenReservedWithRepairSettings - установка токену действий по его замене на этапе нейтрализации ошибок*/
+func (lex *Lexer) AddTokenReservedWithRepairSettings(tokenType, start, end int, val string, tokenNumber int, action, payload int) {
+	if lex.Debug {
+		log.Println(prefix + lex.LexerAutomat.GetLog())
+	}
+	lex.Tokens = append(lex.Tokens, token.Token{Value: val, Type: tokenType, StartPosition: start, EndPosition: end, Line: lex.CurrentLine, Column: lex.CurrentColumn - (end - start), Index: tokenNumber, Action: action, Token: payload, Position: 2})
 	lex.LexerAutomat.Reset()
 }
 
@@ -229,7 +274,7 @@ func (lex *Lexer) AggregateErrors() {
 
 /*AddError - добавить новую ошибку в слайс с ошибками*/
 func (lex *Lexer) AddError(errorType int, tok token.Token) {
-	lex.Errors = append(lex.Errors, error_.ErrorModel{Type: errorType, Token: tok})
+	lex.Errors = append(lex.Errors, error_.ErrorModel{Token: tok, Message: "unsupporting declared token"})
 }
 
 /*NextSym - смещение каретки на следующий символ*/

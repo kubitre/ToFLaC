@@ -5,6 +5,7 @@ import (
 	"strings"
 	"tflac_cw/error_"
 	"tflac_cw/token"
+	"tflac_cw/warning_"
 )
 
 /*SyntaxAnalys - синтаксический анализатор*/
@@ -43,6 +44,22 @@ func (syntx *SyntaxAnalys) Analys(tokens []token.Token) {
 /*GetErrors - получить все ошибки с этапа синтаксического анализа*/
 func (syntx *SyntaxAnalys) GetErrors() []error_.ErrorModel {
 	resp := syntx.SyntaxAnalyser.Errors
-	syntx.SyntaxAnalyser.Reset()
 	return resp
+}
+
+/*GetWarnings - получить все предупреждения с этапа синтаксического анализа*/
+func (syntx *SyntaxAnalys) GetWarnings() []warning_.WarningModel {
+	resp := syntx.SyntaxAnalyser.Warnings
+	return resp
+}
+
+/*GetRepaired - получить все исправления*/
+func (syntx *SyntaxAnalys) GetRepaired() []token.Token {
+	resp := syntx.SyntaxAnalyser.TokensRepaired
+	return resp
+}
+
+/*Reset - сброс */
+func (syntx *SyntaxAnalys) Reset() {
+	syntx.SyntaxAnalyser.Reset()
 }

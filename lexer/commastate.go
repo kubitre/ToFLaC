@@ -24,14 +24,24 @@ func (state *CommaState) New() *CommaState {
 InitState - в начальное состояние
 */
 func (state *CommaState) NextState(states *AllStates, context Context, mark rune) {
-	if mark == ',' {
-		context.SetMem(token.COMMA)
-		context.SetState(states.INIT)
-	} else {
+	switch mark {
+	case ' ':
+		context.SetMem(token.SPACE)
+		context.SetState(states.SPACE)
+		return
+	default:
 		context.SetMem(token.ERROR)
 		context.SetState(states.INIT)
-
+		return
 	}
+	// if mark == ',' {
+	// 	context.SetMem(token.COMMA)
+	// 	context.SetState(states.INIT)
+	// } else {
+	// 	context.SetMem(token.ERROR)
+	// 	context.SetState(states.INIT)
+
+	// }
 }
 
 /*GetCurrentStateName - получить текущее имя состояния*/

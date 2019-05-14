@@ -5,6 +5,7 @@ import (
 	"tflac_cw/token"
 )
 
+/*LexerPart - часть лексического анализатора*/
 type LexerPart struct {
 	Tokens []token.Token
 	Errors []error_.ErrorModel

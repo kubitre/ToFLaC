@@ -36,9 +36,8 @@ func (state *FloatState) GetLastRune() rune {
 
 	pos := state.CurrentPosition
 
-	if state.CurrentPosition+1 >= state.Length {
+	if state.CurrentPosition == state.Length-1 {
 		state.StateParse = true
-		return ' '
 	} else {
 		state.CurrentPosition++
 	}
@@ -53,19 +52,28 @@ func (state *FloatState) NextState(states *AllStates, context Context, mark rune
 	currentRune := state.GetLastRune()
 
 	if state.StateParse {
-		context.SetMem(token.FLOAT)
-		state.Reset()
-
-		context.SetState(states.INIT)
+		if strings.Compare(string(mark), string(currentRune)) == 0 {
+			context.SetMem(token.FLOAT)
+			state.Reset()
+			context.SetState(states.INIT)
+		} else {
+			context.SetTokenForRepairStage(token.FLOAT)
+			context.SetMem(token.ERROR)
+			context.SetState(states.INIT)
+		}
 		return
-	}
-
-	context.SetCache(mark)
-
-	if strings.Compare(string(mark), string(currentRune)) == 0 {
-		context.SetState(states.FLOAT)
 	} else {
-		context.SetState(states.IDENT)
+		context.SetCache(mark)
+
+		if strings.Compare(string(mark), string(currentRune)) == 0 {
+			context.SetState(states.FLOAT)
+		} else {
+			// context.SetMem(token.ERROR)
+			if state.CurrentPosition >= state.Length-2 {
+				context.SetTokenForRepairStage(token.FLOAT)
+			}
+			context.SetState(states.IDENT)
+		}
 	}
 }
 
