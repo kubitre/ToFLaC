@@ -29,13 +29,14 @@ func (state *Z5State) NextState(AllState *AllStates, context Context, mark strin
 		case " ":
 			if context.CurrentActetIsLast() {
 				context.SetMem(mark)
+				context.SetNewFindingIP()
 				context.SetMessage("success parsing ip")
 				context.SetState(AllState.Z8, mark)
 				return
 
 			} else {
-				context.SetMessage("mark[" + mark + "] does not a number and point!")
-				context.SetState(AllState.ERR, mark)	
+				context.SetMessage("mark[" + mark + "] is not a last actet in input str!")
+				context.SetState(AllState.ERR, mark)
 				return
 			}
 		default:

@@ -109,4 +109,5 @@ func RegularExpEntryPoint() {
 
 func main() {
 	RegularExpEntryPoint()
+	// BankomatEntryPoint()
 }

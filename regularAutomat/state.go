@@ -1,9 +1,5 @@
 package regularAutomat
 
-import (
-
-)
-
 type (
 	/*AutomatInterface - основной интерфейс для любого состояния автомата*/
 	AutomatInterface interface {
@@ -13,13 +9,14 @@ type (
 
 	/*AutomatState - Текущее состояние автомата*/
 	AutomatState struct {
-		State        AutomatInterface // текущее состояние автомата
-		AllStates    *AllStates       // сборка всех состояний автомата
-		CacheMemory  string           // текущий ip
-		CacheAll     string           // кэш со всеми
-		CurrentActet int              // текущий актет в разбираемом выражении
-		CurrentPosition int // текщая позиция цифры в актете
-		Logs         []string         // логи
+		State           AutomatInterface // текущее состояние автомата
+		AllStates       *AllStates       // сборка всех состояний автомата
+		CacheMemory     string           // текущий ip
+		AllMatches      []string         // все найденные ip адреса
+		CacheAll        string           // кэш со всеми
+		CurrentActet    int              // текущий актет в разбираемом выражении
+		CurrentPosition int              // текщая позиция цифры в актете
+		Logs            []string         // логи
 	}
 
 	/*Context - контекст для обращения к изменению состояния из состояния*/
@@ -28,18 +25,25 @@ type (
 		SetState(newState AutomatInterface, mark string) // установка текущего состояния автомата
 		GetLog() string                                  // получить логи
 		NewSymbs(str string)                             // новый вход
-		SuccessActetPosition() bool 					// текущая позиция в актете <=3 
-		CurrentActetIsLast() bool // текущий актет последний
+		SuccessActetPosition() bool                      // текущая позиция в актете <=3
+		CurrentActetIsLast() bool                        // текущий актет последний
 		SetMessage(str string)                           // установка сообщения лога в память
 		SetMem(str string)                               // Установка
 		SetDump(str string)                              // дамп текущего адреса в память адресов
 		ClearMem()                                       // чистка
 		ClearLogs()                                      // чистка логов
+		SetNewFindingIP()                                // запись нового найденного p адреса в слайс с найденными адрессами allMathces
 	}
 )
 
+/*SetNewFindingIP -*/
+func (am *AutomatState) SetNewFindingIP() {
+	am.AllMatches = append(am.AllMatches, am.CacheMemory)
+	am.CacheMemory = ""
+}
+
 /*CurrentActetIsLast - проверка на последний актет в введёном ip адресе*/
-func (am *AutomatState) CurrentActetIsLast () bool {
+func (am *AutomatState) CurrentActetIsLast() bool {
 	if am.CurrentActet == 3 {
 		return true
 	}
@@ -68,7 +72,7 @@ func (am *AutomatState) ClearMem() {
 
 /*SetMessage - установка сообщения лога в память */
 func (am *AutomatState) SetMessage(str string) {
-	am.CacheMemory = str
+	am.Logs = append(am.Logs, str)
 }
 
 /*SetDump - создание дампа распарсенных IP адресов*/
@@ -89,9 +93,6 @@ func (am *AutomatState) SetState(newState AutomatInterface, mark string) {
 		am.ClearMem()
 		am.CurrentActet = 0
 		am.CurrentPosition = 0
-		// case "Z"
-		// default:
-		// if am.CurrentActet <= 3
 	}
 
 	switch newState.GetCurrentStateName() {

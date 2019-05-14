@@ -2,6 +2,8 @@ package regularAutomat
 
 import (
 	"fmt"
+	// "bufio"
+	// "os"
 )
 
 type RegularExp struct {
@@ -11,11 +13,21 @@ type RegularExp struct {
 /*Reader - последовательный считыватель*/
 func (regexp *RegularExp) Reader() {
 	// reader := bufio.NewReader(os.Stdin)
-	for {
-		// input, _ := reader.ReadString('\n')
-		// input = string([]byte(input))
-		input := "123.23.21.41"
-		regexp.parser(input)
+	// for {
+	// 	fmt.Println("For exit write the @q")
+	// input, _ := reader.ReadString('\n')
+	// input = string([]byte(input))
+	// fmt.Println("reading: ", input)
+	// if input == "@q"{
+	// 	break
+	// }
+	input := "192.12.3.2 test new ip 93.43.34.43"
+	regexp.parser(input)
+	// }
+
+	fmt.Println("Finding ips: ")
+	for _, value := range regexp.automat.AllMatches {
+		fmt.Println(value)
 	}
 }
 

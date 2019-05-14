@@ -30,12 +30,13 @@ func (state *Z6State) NextState(AllState *AllStates, context Context, mark strin
 		case " ":
 			if context.CurrentActetIsLast() {
 				context.SetMem(mark)
+				context.SetNewFindingIP()
 				context.SetMessage("success parsing ip")
 				context.SetState(AllState.Z8, mark)
 				return
 			} else {
 				context.SetMessage("mark[" + mark + "] does not a number and point!")
-				context.SetState(AllState.ERR, mark)	
+				context.SetState(AllState.ERR, mark)
 				return
 			}
 		default:
@@ -48,10 +49,10 @@ func (state *Z6State) NextState(AllState *AllStates, context Context, mark strin
 	if context.SuccessActetPosition() {
 		context.SetMem(strconv.Itoa(number))
 		context.SetMessage("input mark[" + mark + "] is number in range [0,9]")
-		context.SetState(AllState.Z6 , mark)
+		context.SetState(AllState.Z6, mark)
 	} else {
 		context.SetMessage("error position of new mark")
-		context.SetState(AllState.ERR , mark)
+		context.SetState(AllState.ERR, mark)
 	}
 
 	return
