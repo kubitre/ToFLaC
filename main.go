@@ -30,10 +30,10 @@ func testkernekProcess() {
 	ker := &kernel.Kernel{}
 	ker = ker.New()
 
-	ker.Input("flot lol \n int test;")
+	ker.Input("float ***test1, ****test2, **;") //*test3\n it test , tururu;
 }
 
 func main() {
-	// entryPointStart()
-	testkernekProcess()
+	entryPointStart()
+	// testkernekProcess()
 }

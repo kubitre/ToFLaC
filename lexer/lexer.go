@@ -3,6 +3,7 @@ package lexer
 import (
 	"errors"
 	"log"
+	"strings"
 	"tflac_cw/error_"
 	"tflac_cw/token"
 )
@@ -89,7 +90,28 @@ func (lex *Lexer) Tokenize() {
 		if lex.Debug {
 			log.Println(prefix+"Current Rune: ", string(currentRune))
 		}
+
 		lex.LexerAutomat.NewSymb(currentRune)
+
+		if lex.LexerAutomat.ContinueAdd {
+			flag := false
+			for _, value := range []rune{',', ';', ' ', '*', '\n'} {
+				if strings.Compare(string(currentRune), string(value)) == 0 {
+					flag = true
+					break
+				}
+			}
+
+			if !flag {
+				lex.LexerAutomat.SetCacheMemCopy()
+				lex.NextSym()
+				continue
+			} else {
+				lex.LexerAutomat.SetCache(currentRune)
+				lex.AddTokenReservedWithRepairSettings(lex.LexerAutomat.BufferForContinueParsing, startPosition, endPosition, lex.LexerAutomat.CacheMemory, tokenNumber, 2, lex.LexerAutomat.BufferForRepairStage)
+				tokenNumber++
+			}
+		}
 
 		switch lex.LexerAutomat.Buffer {
 		case token.POINTER:
@@ -195,11 +217,12 @@ func (lex *Lexer) AddTokenUnreserved(tokenType, start, end int, val string, toke
 
 /*AddTokenReservedWithRepairSettings - установка токену действий по его замене на этапе нейтрализации ошибок*/
 func (lex *Lexer) AddTokenReservedWithRepairSettings(tokenType, start, end int, val string, tokenNumber int, action, payload int) {
+	lex.LexerAutomat.SetContinue(false)
+	lex.LexerAutomat.ResetNeedRepair()
 	if lex.Debug {
 		log.Println(prefix + lex.LexerAutomat.GetLog())
 	}
 	lex.Tokens = append(lex.Tokens, token.Token{Value: val, Type: tokenType, StartPosition: start, EndPosition: end, Line: lex.CurrentLine, Column: lex.CurrentColumn - (end - start), Index: tokenNumber, Action: action, Token: payload, Position: 2})
-	lex.LexerAutomat.Reset()
 }
 
 // func (lex *Lexer) TaskStart() error {

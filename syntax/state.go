@@ -27,6 +27,7 @@ type (
 		Warnings            []warning_.WarningModel // полученые предупреждения
 		TokensRepaired      []token.Token           // нейтрализованные продукции
 		Logs                []string                // логи
+		ChangeState         string
 	}
 
 	/*Context - контекст для обращения к изменению состояния из состояния*/
@@ -43,17 +44,46 @@ type (
 		ChangeSpacePosition(newpos int) // присвоение позиции пробела
 		CurrentSpacePosition() int      // получение текущий позиции пробела
 
-		PointerExpect()          // обновление флажка
-		PointerFirstCounter()    // обновление счётчика количества указателей для 1го идентификатора
-		PointerLastCounter()     // обновление счётчика количества указателей для 2го и последующих идентификаторов
-		PointerValue() int       // текущее количество указателей перед первым идентификатором
-		PointerReset()           // сброс счётчика
-		PointerCheckState() bool // проверка значения счётчика
-		PointerAvailable() bool
+		PointerExpect()             // обновление флажка
+		PointerFirstCounter()       // обновление счётчика количества указателей для 1го идентификатора
+		PointerLastCounter()        // обновление счётчика количества указателей для 2го и последующих идентификаторов
+		PointerValue() int          // текущее количество указателей перед первым идентификатором
+		PointerReset()              // сброс счётчика
+		PointerCheckState() bool    // проверка значения счётчика
+		PointerAvailable() bool     // проверка на правую границу
+		PointerAvailableLast() bool // проверка на левую границу
+		PointerLastRemoveOne()      // понижения счётчика
+		ResetLastPointerCounter()   // сброс значения счётчика последнего
 		PointerLasts() int
 		itFirstSectionPointer() bool
+		SetChangeState(str string) // установка состояния автомата после ошибки
+		GetChangeState() string    // получение состояния автомата для восстановления после ошибки
 	}
 )
+
+func (automat *AutomatState) PointerAvailableLast() bool {
+	if automat.PointerAmountNext < automat.PointerFirstAmounts {
+		return true
+	} else {
+		return false
+	}
+}
+
+func (automat *AutomatState) ResetLastPointerCounter() {
+	automat.PointerAmountNext = 0
+}
+
+func (automat *AutomatState) PointerLastRemoveOne() {
+	automat.PointerAmountNext--
+}
+
+func (automat *AutomatState) GetChangeState() string {
+	return automat.ChangeState
+}
+
+func (automat *AutomatState) SetChangeState(str string) {
+	automat.ChangeState = str
+}
 
 func (automat *AutomatState) itFirstSectionPointer() bool {
 	if automat.PointerAmountNext == 0 {
@@ -70,7 +100,7 @@ func (automat *AutomatState) PointerLasts() int {
 
 /*PointerAvailable - количество указателей совпадает*/
 func (automat *AutomatState) PointerAvailable() bool {
-	if automat.PointerFirstAmounts == automat.PointerAmountNext {
+	if automat.PointerFirstAmounts >= automat.PointerAmountNext {
 		return true
 	} else {
 		return false
@@ -162,6 +192,11 @@ func (automat *AutomatState) RecordLog(log string) {
 
 /*NewSymb - новый символ на вход автомата*/
 func (automat *AutomatState) NewSymb(token token.Token) {
+	lastIndexInSection := 0
+	if len(automat.TokensRepaired) != 0 {
+		lastIndexInSection = automat.TokensRepaired[len(automat.TokensRepaired)-1].Index + 1
+	}
+	token.Index = lastIndexInSection
 	automat.TokensRepaired = append(automat.TokensRepaired, token)
 	automat.State.NextState(automat.AllStates, automat, token)
 }
@@ -199,13 +234,20 @@ func (automat *AutomatState) RepairSentence(tok token.Token, action, position, t
 	} else {
 		switch action {
 		case 0:
-			automat.AddTokenByPosition(posit, tp)
+			switch position {
+			case 0:
+				automat.AddTokenBefore(tp, tok)
+				return
+			case 1:
+				automat.AddTokenAfter(tp, tok)
+				return
+			}
 			return
 		case 1:
 			automat.RemoveTokenByPosition(posit)
 			return
 		case 2:
-			automat.ChangeTokenByPosition(posit, tp)
+			automat.ChangeTokenByPosition(tok.Index, tp)
 			return
 		}
 	}
@@ -213,12 +255,18 @@ func (automat *AutomatState) RepairSentence(tok token.Token, action, position, t
 
 /*ChangeTokenByPosition - изменить токен по его позции на тип tp*/
 func (automat *AutomatState) ChangeTokenByPosition(position, tp int) {
-	for _, val := range automat.TokensRepaired {
-		if val.Index == position {
-			val.Type = tp
-			val.Value = ""
+	repaired := automat.TokensRepaired
+	tokenChange := repaired[position]
+	tokenChange.Type = tp
+	returnedTokens := []token.Token{}
+	for _, value := range repaired {
+		if value.Index == tokenChange.Index {
+			returnedTokens = append(returnedTokens, tokenChange)
+		} else {
+			returnedTokens = append(returnedTokens, value)
 		}
 	}
+	automat.TokensRepaired = returnedTokens
 }
 
 /*GetPositionByDefinedPos - получение позиции по отношению к токену*/
@@ -238,23 +286,34 @@ func (automat *AutomatState) GetPositionByDefinedPos(position int, token token.T
 	}
 }
 
-/*AddTokenByPosition - добавление токена*/
-func (automat *AutomatState) AddTokenByPosition(position, tp int) {
+/*AddTokenAfter - добавление после*/
+func (automat *AutomatState) AddTokenAfter(tp int, tok token.Token) {
 	newToken := automat.GetTokenByTypeNum(tp)
-	newToken.Index = position
-	var newTokens []token.Token
-
-	for _, val := range automat.TokensRepaired {
-		if val.Index == position {
-			val.Index++
-			newTokens = append(newTokens, *newToken, val)
-		} else {
-			val.Index++
-			newTokens = append(newTokens, val)
-		}
-	}
+	newToken.Index = tok.Index + 1
+	newTokens := automat.TokensRepaired
+	newTokens = append(newTokens, *newToken)
 	automat.TokensRepaired = newTokens
 	return
+}
+
+/*AddTokenBefore - добавить перед*/
+func (automat *AutomatState) AddTokenBefore(tp int, tok token.Token) {
+	newToken := automat.GetTokenByTypeNum(tp)
+	newToken.Index = tok.Index
+	newTokens := []token.Token{}
+	for _, val := range automat.TokensRepaired {
+		if val.Index == tok.Index {
+			newTokens = append(newTokens, *newToken)
+			turur := val
+			turur.Index++
+			newTokens = append(newTokens, turur)
+		} else {
+			turur := val
+			newTokens = append(newTokens, turur)
+		}
+	}
+
+	automat.TokensRepaired = newTokens
 }
 
 /*RemoveTokenByPosition - удаление токена*/
@@ -263,9 +322,13 @@ func (automat *AutomatState) RemoveTokenByPosition(position int) {
 	for _, val := range automat.TokensRepaired {
 		if val.Index == position {
 			continue
+		} else if val.Index > position {
+			tururu := val
+			tururu.Index--
+			newTokens = append(newTokens, tururu)
 		} else {
-			val.Index--
-			newTokens = append(newTokens, val)
+			tururu := val
+			newTokens = append(newTokens, tururu)
 		}
 	}
 	automat.TokensRepaired = newTokens
@@ -304,9 +367,6 @@ func (automat *AutomatState) SetState(newState AutomatInterface) {
 	switch newState.GetCurrentStateName() {
 	case automat.AllStates.INIT.GetCurrentStateName():
 		automat.PointerReset()
-		return
-	case automat.AllStates.END.GetCurrentStateName():
-		automat.State.NextState(automat.AllStates, automat, token.Token{})
 		return
 	case automat.AllStates.ERROR.GetCurrentStateName():
 		automat.State.NextState(automat.AllStates, automat, token.Token{})

@@ -40,19 +40,28 @@ func (state *InitState) NextState(states *AllStates, context Context, tok token.
 		context.SetState(states.INIT)
 		return
 	case token.IDENTIFIER:
-		context.NewError(tok, "Unexpected identifier! expected type| space| new line. You should add type of this identifier", 0, 0, 1)
+		context.NewError(tok, "Unexpected identifier! expected type| space| new line. You should add type of this identifier", 0, 0, token.IDENTIFIER)
+		context.SetChangeState(states.INIT.GetCurrentStateName())
 		context.SetState(states.ERROR)
 		return
 	case token.POINTER:
-		context.NewError(tok, "Unexpected pointer! you should add type before this pointer", 0, 0, 1)
+		context.NewError(tok, "Unexpected pointer! you should add type before this pointer", 0, 0, token.IDENTIFIER)
+		context.SetChangeState(states.INIT.GetCurrentStateName())
 		context.SetState(states.ERROR)
 		return
 	case token.COMMA:
-		context.NewError(tok, "Unexpected comma! you should add type", 0, 0, 1)
+		context.NewError(tok, "Unexpected comma! you should add type", 0, 0, token.IDENTIFIER)
+		context.SetChangeState(states.TYPE.GetCurrentStateName())
+		context.SetState(states.ERROR)
+		return
+	case token.ERROR:
+		context.NewError(tok, "You use type with error syms!", tok.Action, tok.Position, tok.Token)
+		context.SetChangeState(states.TYPE.GetCurrentStateName())
 		context.SetState(states.ERROR)
 		return
 	default:
 		context.NewError(tok, "Unexpected error!", 1, -1, -1)
+		context.SetChangeState(states.TYPE.GetCurrentStateName())
 		context.SetState(states.ERROR)
 		return
 	}

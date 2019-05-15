@@ -20,7 +20,6 @@ InitState - в начальное состояние
 func (state *TypeState) NextState(states *AllStates, context Context, tok token.Token) {
 	switch tok.Type {
 	case token.POINTER:
-		context.PointerExpect()
 		context.PointerFirstCounter()
 		context.SetState(states.POINTER)
 		return
@@ -28,7 +27,8 @@ func (state *TypeState) NextState(states *AllStates, context Context, tok token.
 		if context.CurrentSpacePosition() == 0 {
 			context.SetState(states.IDENT)
 		} else {
-			context.NewError(tok, "expected space or pointer before declare varibale name", 1, 0, 2)
+			context.NewError(tok, "expected space or pointer before declare varibale name", 0, 0, token.SPACE)
+			context.SetChangeState(states.TYPE.GetCurrentStateName())
 			context.SetState(states.ERROR)
 		}
 		return
@@ -38,19 +38,28 @@ func (state *TypeState) NextState(states *AllStates, context Context, tok token.
 		return
 	case token.NEWLINE:
 		context.NewError(tok, "identifier was expected but was not detected", 1, -1, -1)
+		context.SetChangeState(states.INIT.GetCurrentStateName())
 		context.SetState(states.ERROR)
 		return
 	case token.ENDSTATEMENT:
-		context.NewError(tok, "to end the announcement you must enter an identifier", 0, 0, 3)
+		context.NewError(tok, "to end the announcement you must enter an identifier", 0, 0, token.IDENTIFIER)
+		context.SetChangeState(states.IDENT.GetCurrentStateName())
 		context.SetState(states.ERROR)
 		return
 	case token.COMMA:
-		context.NewError(tok, "you can not use comma between types!", 1, -1, 4)
+		context.NewError(tok, "you can not use comma between types!", 1, -1, -1)
+		context.SetChangeState(states.TYPE.GetCurrentStateName())
 		context.SetState(states.ERROR)
 		return
 	case token.ERROR:
 		context.NewError(tok, "expected true value, but we expect error!", 1, -1, -1)
+		context.SetChangeState(states.TYPE.GetCurrentStateName())
 		context.SetState(states.ERROR)
+		return
+	case token.NONTYPE:
+		context.NewError(tok, "this is identifier, changed", 2, 2, token.IDENTIFIER)
+		context.SetChangeState(states.IDENT.GetCurrentStateName())
+		context.SetState(states.IDENT)
 		return
 	}
 }

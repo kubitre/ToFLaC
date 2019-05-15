@@ -2,7 +2,6 @@ package kernel
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"tflac_cw/lexer"
 	"tflac_cw/syntax"
@@ -39,13 +38,46 @@ func (ker *Kernel) Input(str string) {
 	ker.print(ker.LexerAnalys.Tokens)
 	ker.SyntaxAnalys.Analys(ker.LexerAnalys.Tokens)
 	ker.printErrors()
+	ker.printRepairedTokens()
 	ker.printRepairedSentence()
 	// ker.Neitralize()
 	// ker.print(ker.RepairTokens)
 }
 
 func (ker *Kernel) printRepairedSentence() {
+	fmt.Print("Repaired sentence: ")
+	for _, value := range ker.SyntaxAnalys.GetRepaired() {
+		fmt.Print(ker.getTokenStringNotation(value))
+	}
+}
 
+func (ker *Kernel) getTokenStringNotation(tok token.Token) string {
+	switch tok.Type {
+	case token.COMMA:
+		return ","
+	case token.ENDSTATEMENT:
+		return ";"
+	case token.INT:
+		return "int"
+	case token.FLOAT:
+		return "float"
+	case token.IDENTIFIER:
+		return tok.Value
+	case token.SPACE:
+		return " "
+	case token.NEWLINE:
+		return "\n"
+	case token.POINTER:
+		return "*"
+	}
+	return ""
+}
+
+func (ker *Kernel) printRepairedTokens() {
+	fmt.Println("Repaired for: ")
+	for _, value := range ker.SyntaxAnalys.GetRepaired() {
+		fmt.Println(ker.getTokenStringType(value.Type, value.StartPosition, value.EndPosition, value.Value))
+	}
 }
 
 func (ker *Kernel) printErrors() {
@@ -119,27 +151,33 @@ func (ker *Kernel) printErrors() {
 
 func (ker *Kernel) print(tokens []token.Token) {
 	for _, val := range tokens {
-		switch val.Type {
-		case token.COMMA:
-			log.Println("[TOKEN: COMMA, POSITION: {" + strconv.Itoa(val.StartPosition) + ";" + strconv.Itoa(val.EndPosition) + "}]")
-		case token.NEWLINE:
-			log.Println("[TOKEN: NEW LINE: {" + strconv.Itoa(val.StartPosition) + ";" + strconv.Itoa(val.EndPosition) + "}]")
-		case token.SPACE:
-			log.Println("[TOKEN: SPACE: {" + strconv.Itoa(val.StartPosition) + ";" + strconv.Itoa(val.EndPosition) + "}]")
-		case token.POINTER:
-			log.Println("[TOKEN: POINTER: {" + strconv.Itoa(val.StartPosition) + ";" + strconv.Itoa(val.EndPosition) + "}]")
-		case token.NONTYPE:
-			log.Println("[TOKEN: NON TYPE: {" + strconv.Itoa(val.StartPosition) + ";" + strconv.Itoa(val.EndPosition) + "}]")
-		case token.INT:
-			log.Println("[TOKEN: INTEGER TYPE: {" + strconv.Itoa(val.StartPosition) + ";" + strconv.Itoa(val.EndPosition) + "}]")
-		case token.IDENTIFIER:
-			log.Println("[TOKEN: IDENTIFIER: {" + strconv.Itoa(val.StartPosition) + ";" + strconv.Itoa(val.EndPosition) + "}, VALUE: " + val.Value + "]")
-		case token.FLOAT:
-			log.Println("[TOKEN: FLOAT TYPE: {" + strconv.Itoa(val.StartPosition) + ";" + strconv.Itoa(val.EndPosition) + "}]")
-		case token.ENDSTATEMENT:
-			log.Println("[TOKEN: END OF STATEMENT: {" + strconv.Itoa(val.StartPosition) + ";" + strconv.Itoa(val.EndPosition) + "}]")
-		case token.ERROR:
-			log.Println("[TOKEN: ERROR: {" + strconv.Itoa(val.StartPosition) + ";" + strconv.Itoa(val.EndPosition) + "}]")
-		}
+		fmt.Println(ker.getTokenStringType(val.Type, val.StartPosition, val.EndPosition, val.Value))
+	}
+}
+
+func (ker *Kernel) getTokenStringType(tp, start, end int, value string) string {
+	switch tp {
+	case token.COMMA:
+		return "[TOKEN: COMMA, POSITION: {" + strconv.Itoa(start) + ";" + strconv.Itoa(end) + "}]"
+	case token.NEWLINE:
+		return "[TOKEN: NEW LINE: {" + strconv.Itoa(start) + ";" + strconv.Itoa(end) + "}]"
+	case token.SPACE:
+		return "[TOKEN: SPACE: {" + strconv.Itoa(start) + ";" + strconv.Itoa(end) + "}]"
+	case token.POINTER:
+		return "[TOKEN: POINTER: {" + strconv.Itoa(start) + ";" + strconv.Itoa(end) + "}]"
+	case token.NONTYPE:
+		return "[TOKEN: NON TYPE: {" + strconv.Itoa(start) + ";" + strconv.Itoa(end) + "}]"
+	case token.INT:
+		return "[TOKEN: INTEGER TYPE: {" + strconv.Itoa(start) + ";" + strconv.Itoa(end) + "}]"
+	case token.IDENTIFIER:
+		return "[TOKEN: IDENTIFIER: {" + strconv.Itoa(start) + ";" + strconv.Itoa(end) + "}, VALUE: " + value + "]"
+	case token.FLOAT:
+		return "[TOKEN: FLOAT TYPE: {" + strconv.Itoa(start) + ";" + strconv.Itoa(end) + "}]"
+	case token.ENDSTATEMENT:
+		return "[TOKEN: END OF STATEMENT: {" + strconv.Itoa(start) + ";" + strconv.Itoa(end) + "}]"
+	case token.ERROR:
+		return "[TOKEN: ERROR: {" + strconv.Itoa(start) + ";" + strconv.Itoa(end) + "}]"
+	default:
+		return ""
 	}
 }

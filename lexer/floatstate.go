@@ -59,6 +59,7 @@ func (state *FloatState) NextState(states *AllStates, context Context, mark rune
 		} else {
 			context.SetTokenForRepairStage(token.FLOAT)
 			context.SetMem(token.ERROR)
+			context.SetContinue(true)
 			context.SetState(states.INIT)
 		}
 		return
@@ -68,11 +69,10 @@ func (state *FloatState) NextState(states *AllStates, context Context, mark rune
 		if strings.Compare(string(mark), string(currentRune)) == 0 {
 			context.SetState(states.FLOAT)
 		} else {
-			// context.SetMem(token.ERROR)
-			if state.CurrentPosition >= state.Length-2 {
-				context.SetTokenForRepairStage(token.FLOAT)
-			}
-			context.SetState(states.IDENT)
+			context.SetMem(token.ERROR)
+			context.SetTokenForRepairStage(token.FLOAT)
+			context.SetContinue(true)
+			context.SetState(states.INIT)
 		}
 	}
 }

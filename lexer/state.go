@@ -14,13 +14,16 @@ type (
 
 	/*AutomatState - Текущее состояние автомата*/
 	AutomatState struct {
-		State                AutomatInterface // текущее состояние автомата
-		AllStates            *AllStates       // сборка всех состояний автомата
-		Buffer               int              // буфер для автомата
-		BufferForRepairStage int              // заменяемый токен
-		NeedForRepairChange  bool             // требуется ли замена на BufferForRepairStage
-		CacheMemory          string           // текущее значение токена
-		Logs                 []string         // логи
+		State                    AutomatInterface // текущее состояние автомата
+		AllStates                *AllStates       // сборка всех состояний автомата
+		Buffer                   int              // буфер для автомата
+		BufferForRepairStage     int              // заменяемый токен
+		NeedForRepairChange      bool             // требуется ли замена на BufferForRepairStage
+		ContinueAdd              bool             // продолжение парсинга
+		CacheMemory              string           // текущее значение токена
+		BufferForContinueParsing int
+		CacheMemoryCopy          string
+		Logs                     []string // логи
 	}
 
 	/*Context - контекст для обращения к изменению состояния из состояния*/
@@ -35,8 +38,28 @@ type (
 		NewSymb(mark rune)                  // новый вход
 		ClearLogs()                         // чистка логов\
 		Reset()                             // сброс состояния автомата
+		SetContinue(flag bool)              // переключить на продолжение парса в заданный токен
+		SetCacheMemCopy()                   // установка значения в кэш
+		ResetNeedRepair()
 	}
 )
+
+func (automat *AutomatState) ResetNeedRepair() {
+	automat.NeedForRepairChange = false
+	automat.BufferForRepairStage = -1
+}
+
+func (automat *AutomatState) SetCacheMemCopy() {
+	automat.CacheMemoryCopy += automat.CacheMemory
+}
+
+/*SetContinue - продолжение*/
+func (automat *AutomatState) SetContinue(flag bool) {
+	automat.ContinueAdd = flag
+	automat.CacheMemoryCopy = automat.CacheMemory
+	automat.CacheMemory = ""
+	automat.BufferForContinueParsing = automat.Buffer
+}
 
 /*ChangeNeedRepair - изменить текущее состояние флага*/
 func (automat *AutomatState) ChangeNeedRepair() {
