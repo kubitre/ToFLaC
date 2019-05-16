@@ -17,7 +17,7 @@ func (state *IdentifierState) New() *IdentifierState {
 /*NextState - следующее состояние:
 InitState - в начальное состояние
 */
-func (state *IdentifierState) NextState(states *AllStates, context Context, tok token.Token) {
+func (state *IdentifierState) NextState(states *AllStates, context Context, tok *token.Token) {
 	switch tok.Type {
 	case token.COMMA:
 		context.SetState(states.COMMA)
@@ -30,7 +30,7 @@ func (state *IdentifierState) NextState(states *AllStates, context Context, tok 
 		context.NewError(tok, "expected pointer but you should add comma", 0, 2, token.COMMA)
 		context.SetChangeState(states.COMMA.GetCurrentStateName())
 		context.SetState(states.ERROR)
-
+		return
 	case token.SPACE:
 		// context.NewError(tok, "expected comma or end of statement, but was detected space", 0, 0, token.COMMA)
 		// context.SetChangeState(states.IDENT.GetCurrentStateName())
@@ -56,6 +56,12 @@ func (state *IdentifierState) NextState(states *AllStates, context Context, tok 
 		context.NewError(tok, "expected end of statement or comma or space, but requested a error token! Check lexer output", 1, -1, -1)
 		context.SetChangeState(states.IDENT.GetCurrentStateName())
 		context.SetState(states.ERROR)
+		return
+	case token.IDENTIFIER:
+		context.NewError(tok, "before declaring new varible, you should add comma betwen them identifiers", 0, 0, token.COMMA)
+		context.SetChangeState(states.IDENT.GetCurrentStateName())
+		context.SetState(states.ERROR)
+		return
 	}
 }
 

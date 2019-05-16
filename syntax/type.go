@@ -17,7 +17,7 @@ func (state *TypeState) New() *TypeState {
 /*NextState - следующее состояние:
 InitState - в начальное состояние
 */
-func (state *TypeState) NextState(states *AllStates, context Context, tok token.Token) {
+func (state *TypeState) NextState(states *AllStates, context Context, tok *token.Token) {
 	switch tok.Type {
 	case token.POINTER:
 		context.PointerFirstCounter()

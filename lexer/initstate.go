@@ -9,6 +9,10 @@ type InitState struct {
 	StateName string
 }
 
+var (
+	charactersUnused []rune = []rune{'~', '`', '!', '@', '#', '$', '%', '^', '&', '(', ')', '{', '}', '[', ']', '?', '<', '>', ':', '.', 92, 47, 124}
+)
+
 func (state *InitState) New() *InitState {
 	state.StateName = "LEXER_AUTOMAT_INIT_STATE"
 	return state
@@ -44,9 +48,10 @@ func (state *InitState) NextState(states *AllStates, context Context, mark rune)
 		context.SetState(states.POINTER)
 		return
 	default:
-		for _, val := range []rune{'~', '`', '!', '@', '#', '$', '%', '^', '&', '(', ')', '{', '}', '[', ']', '?', '<', '>'} {
+		for _, val := range charactersUnused {
 			if mark == val {
-				context.SetMem(token.ERROR)
+				context.SetMem(token.NONTYPE)
+				context.SetTokenForRepairStage(token.NONTYPE, 1)
 				context.SetState(states.INIT)
 				return
 			}

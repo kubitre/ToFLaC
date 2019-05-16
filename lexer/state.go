@@ -18,6 +18,7 @@ type (
 		AllStates                *AllStates       // сборка всех состояний автомата
 		Buffer                   int              // буфер для автомата
 		BufferForRepairStage     int              // заменяемый токен
+		ActionForRepairStage     int              // действие с токеном
 		NeedForRepairChange      bool             // требуется ли замена на BufferForRepairStage
 		ContinueAdd              bool             // продолжение парсинга
 		CacheMemory              string           // текущее значение токена
@@ -28,18 +29,18 @@ type (
 
 	/*Context - контекст для обращения к изменению состояния из состояния*/
 	Context interface {
-		RecordLog(log string)               // записать лог
-		SetState(newState AutomatInterface) // установка текущего состояния автомата
-		SetCache(mark rune)                 // установка значения токена
-		GetLog() string                     // получить логи
-		SetMem(value int)                   // устанлока текущего выделяемого типа
-		SetTokenForRepairStage(typ int)     // установка значения для токена после синтаксического анализа
-		ChangeNeedRepair()                  // изменить значение добавления изменения на стадии исправления ошибок
-		NewSymb(mark rune)                  // новый вход
-		ClearLogs()                         // чистка логов\
-		Reset()                             // сброс состояния автомата
-		SetContinue(flag bool)              // переключить на продолжение парса в заданный токен
-		SetCacheMemCopy()                   // установка значения в кэш
+		RecordLog(log string)                       // записать лог
+		SetState(newState AutomatInterface)         // установка текущего состояния автомата
+		SetCache(mark rune)                         // установка значения токена
+		GetLog() string                             // получить логи
+		SetMem(value int)                           // устанлока текущего выделяемого типа
+		SetTokenForRepairStage(typ int, action int) // установка значения для токена после синтаксического анализа
+		ChangeNeedRepair()                          // изменить значение добавления изменения на стадии исправления ошибок
+		NewSymb(mark rune)                          // новый вход
+		ClearLogs()                                 // чистка логов\
+		Reset()                                     // сброс состояния автомата
+		SetContinue(flag bool)                      // переключить на продолжение парса в заданный токен
+		SetCacheMemCopy()                           // установка значения в кэш
 		ResetNeedRepair()
 	}
 )
@@ -47,6 +48,7 @@ type (
 func (automat *AutomatState) ResetNeedRepair() {
 	automat.NeedForRepairChange = false
 	automat.BufferForRepairStage = -1
+	automat.ActionForRepairStage = -1
 }
 
 func (automat *AutomatState) SetCacheMemCopy() {
@@ -68,9 +70,10 @@ func (automat *AutomatState) ChangeNeedRepair() {
 }
 
 /*SetTokenForRepairStage - установка токена для его вставки на этапе нейтрализации ошибок после синтаксического анализа*/
-func (automat *AutomatState) SetTokenForRepairStage(typ int) {
+func (automat *AutomatState) SetTokenForRepairStage(typ int, action int) {
 	automat.NeedForRepairChange = true
 	automat.BufferForRepairStage = typ
+	automat.ActionForRepairStage = action
 }
 
 /*Reset - сброс значений текущего автомата*/

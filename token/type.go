@@ -23,4 +23,5 @@ const (
 	SPACE        = iota + 5  // iota == 7 => 12
 	NEWLINE      = iota + 6  // iota == 8 => 14
 	COMMA        = iota + 7  // iota == 9 => 16
+	TYPE         = iota + 8  // iota == 10 => 18
 )

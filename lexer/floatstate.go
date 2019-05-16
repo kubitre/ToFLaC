@@ -57,20 +57,26 @@ func (state *FloatState) NextState(states *AllStates, context Context, mark rune
 			state.Reset()
 			context.SetState(states.INIT)
 		} else {
-			context.SetTokenForRepairStage(token.FLOAT)
+			context.SetTokenForRepairStage(token.FLOAT, 2)
 			context.SetMem(token.ERROR)
 			context.SetContinue(true)
 			context.SetState(states.INIT)
 		}
 		return
 	} else {
+		if strings.Compare(string(mark), string(' ')) == 0 {
+			context.SetMem(token.ERROR)
+			context.SetTokenForRepairStage(token.TYPE, 2)
+			context.SetState(states.INIT)
+			return
+		}
 		context.SetCache(mark)
 
 		if strings.Compare(string(mark), string(currentRune)) == 0 {
 			context.SetState(states.FLOAT)
 		} else {
 			context.SetMem(token.ERROR)
-			context.SetTokenForRepairStage(token.FLOAT)
+			context.SetTokenForRepairStage(token.FLOAT, 2)
 			context.SetContinue(true)
 			context.SetState(states.INIT)
 		}

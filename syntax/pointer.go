@@ -18,7 +18,7 @@ func (state *PointerState) New() *PointerState {
 /*NextState - следующее состояние:
 InitState - в начальное состояние
 */
-func (state *PointerState) NextState(states *AllStates, context Context, tok token.Token) {
+func (state *PointerState) NextState(states *AllStates, context Context, tok *token.Token) {
 	switch tok.Type {
 	case token.POINTER:
 		if context.PointerCheckState() {

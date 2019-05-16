@@ -21,7 +21,7 @@ SPACE,NEWLINE - в состояние InitState
 ENDSTATEMENT - в состояние InitState с предупреждением
 IDENTIFIER, POINTER - в состояние ErrorState с ошибкой
 */
-func (state *InitState) NextState(states *AllStates, context Context, tok token.Token) {
+func (state *InitState) NextState(states *AllStates, context Context, tok *token.Token) {
 	switch tok.Type {
 	case token.INT:
 		context.SetState(states.TYPE)
@@ -36,12 +36,14 @@ func (state *InitState) NextState(states *AllStates, context Context, tok token.
 		context.SetState(states.INIT)
 		return
 	case token.ENDSTATEMENT:
-		context.NewWarn(tok, "before have not expression for do this token")
+		context.NewWarn(*tok, "before have not expression for do this token")
 		context.SetState(states.INIT)
 		return
 	case token.IDENTIFIER:
-		context.NewError(tok, "Unexpected identifier! expected type| space| new line. You should add type of this identifier", 0, 0, token.IDENTIFIER)
-		context.SetChangeState(states.INIT.GetCurrentStateName())
+		context.NewError(tok, "Unexpected identifier! expected type| space| new line. You should add type of this identifier", 0, 0, token.TYPE)
+		tok.Index++
+		context.NewError(tok, "before this identifier should a space!", 0, 0, token.SPACE)
+		context.SetChangeState(states.IDENT.GetCurrentStateName())
 		context.SetState(states.ERROR)
 		return
 	case token.POINTER:
@@ -57,6 +59,15 @@ func (state *InitState) NextState(states *AllStates, context Context, tok token.
 	case token.ERROR:
 		context.NewError(tok, "You use type with error syms!", tok.Action, tok.Position, tok.Token)
 		context.SetChangeState(states.TYPE.GetCurrentStateName())
+		context.SetState(states.ERROR)
+		return
+	case token.NONTYPE:
+		context.NewError(tok, "this identifier should have type", 0, 0, token.TYPE)
+		tok.Index++
+		context.NewError(tok, "this identifier should have space after type declaration", 0, 0, token.SPACE)
+		tok.Index++
+		context.NewError(tok, "handle unsuporting token.Change to identifier token", 2, 2, token.IDENTIFIER)
+		context.SetChangeState(states.IDENT.GetCurrentStateName())
 		context.SetState(states.ERROR)
 		return
 	default:

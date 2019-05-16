@@ -31,24 +31,29 @@ func (ker *Kernel) New() *Kernel {
 
 /*Input - ввод нового текста*/
 func (ker *Kernel) Input(str string) {
-	ker.LexerAnalys.New(true)
+	ker.LexerAnalys.New(false)
 	ker.LexerAnalys.Input(str)
 	ker.LexerAnalys.Tokenize()
 
-	ker.print(ker.LexerAnalys.Tokens)
+	// ker.print(ker.LexerAnalys.Tokens)
 	ker.SyntaxAnalys.Analys(ker.LexerAnalys.Tokens)
-	ker.printErrors()
-	ker.printRepairedTokens()
-	ker.printRepairedSentence()
+	// ker.printErrors()
+	// ker.printRepairedTokens()
+	// ker.printRepairedSentence()
 	// ker.Neitralize()
 	// ker.print(ker.RepairTokens)
 }
 
-func (ker *Kernel) printRepairedSentence() {
-	fmt.Print("Repaired sentence: ")
+func (ker *Kernel) PrintRepairedSentence() {
+	fmt.Print("Repaired sentence: ", ker.RepairActual())
+}
+
+func (ker *Kernel) RepairActual() string {
+	str := ""
 	for _, value := range ker.SyntaxAnalys.GetRepaired() {
-		fmt.Print(ker.getTokenStringNotation(value))
+		str += ker.getTokenStringNotation(value)
 	}
+	return str
 }
 
 func (ker *Kernel) getTokenStringNotation(tok token.Token) string {
@@ -69,6 +74,8 @@ func (ker *Kernel) getTokenStringNotation(tok token.Token) string {
 		return "\n"
 	case token.POINTER:
 		return "*"
+	case token.TYPE:
+		return "<type>"
 	}
 	return ""
 }

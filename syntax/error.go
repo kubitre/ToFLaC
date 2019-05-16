@@ -15,7 +15,7 @@ func (state *ErrorState) New() *ErrorState {
 /*NextState - следующее состояние:
 InitState - в начальное состояние
 */
-func (state *ErrorState) NextState(states *AllStates, context Context, token token.Token) {
+func (state *ErrorState) NextState(states *AllStates, context Context, token *token.Token) {
 	switch context.GetChangeState() {
 	case states.TYPE.GetCurrentStateName():
 		context.SetState(states.TYPE)

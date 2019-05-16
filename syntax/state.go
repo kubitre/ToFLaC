@@ -10,7 +10,7 @@ import (
 type (
 	/*AutomatInterface - основной интерфейс для любого состояния автомата*/
 	AutomatInterface interface {
-		NextState(states *AllStates, context Context, token token.Token)
+		NextState(states *AllStates, context Context, token *token.Token)
 		GetCurrentStateName() string
 	}
 
@@ -32,14 +32,14 @@ type (
 
 	/*Context - контекст для обращения к изменению состояния из состояния*/
 	Context interface {
-		RecordLog(log string)                                              // записать лог
-		SetState(newState AutomatInterface)                                // установка текущего состояния автомата
-		GetLog() string                                                    // получить логи
-		NewSymb(token token.Token)                                         // новый вход
-		NewError(token token.Token, msg string, action, position, tok int) // добавление новой ошибки в стек ошибок
-		NewWarn(token token.Token, msg string)                             // добавление нового предупреждения в стек предупреждений
-		ClearLogs()                                                        // чистка логов\
-		Reset()                                                            // сброс состояния автомата
+		RecordLog(log string)                                               // записать лог
+		SetState(newState AutomatInterface)                                 // установка текущего состояния автомата
+		GetLog() string                                                     // получить логи
+		NewSymb(token token.Token)                                          // новый вход
+		NewError(token *token.Token, msg string, action, position, tok int) // добавление новой ошибки в стек ошибок
+		NewWarn(token token.Token, msg string)                              // добавление нового предупреждения в стек предупреждений
+		ClearLogs()                                                         // чистка логов\
+		Reset()                                                             // сброс состояния автомата
 
 		ChangeSpacePosition(newpos int) // присвоение позиции пробела
 		CurrentSpacePosition() int      // получение текущий позиции пробела
@@ -58,6 +58,7 @@ type (
 		itFirstSectionPointer() bool
 		SetChangeState(str string) // установка состояния автомата после ошибки
 		GetChangeState() string    // получение состояния автомата для восстановления после ошибки
+		
 	}
 )
 
@@ -198,16 +199,16 @@ func (automat *AutomatState) NewSymb(token token.Token) {
 	}
 	token.Index = lastIndexInSection
 	automat.TokensRepaired = append(automat.TokensRepaired, token)
-	automat.State.NextState(automat.AllStates, automat, token)
+	automat.State.NextState(automat.AllStates, automat, &token)
 }
 
 /*NewError - добавление новой ошибки через контекст*/
-func (automat *AutomatState) NewError(token token.Token, errormsg string, action, position, tok int) {
+func (automat *AutomatState) NewError(token *token.Token, errormsg string, action, position, tok int) {
 	// token.Action = action
 	// token.Position = position
 	// token.Token = tok
 	automat.RepairSentence(token, action, position, tok)
-	automat.Errors = append(automat.Errors, error_.ErrorModel{Token: token, Message: errormsg})
+	automat.Errors = append(automat.Errors, error_.ErrorModel{Token: *token, Message: errormsg})
 }
 
 /*GetLog - получить все логи из автомата*/
@@ -221,9 +222,9 @@ func (automat *AutomatState) GetLog() string {
 }
 
 /*RepairSentence - исправление предложения*/
-func (automat *AutomatState) RepairSentence(tok token.Token, action, position, tp int) {
+func (automat *AutomatState) RepairSentence(tok *token.Token, action, position, tp int) {
 
-	posit := automat.GetPositionByDefinedPos(position, tok)
+	posit := automat.GetPositionByDefinedPos(position, *tok)
 
 	if tok.Action != 0 {
 		switch tok.Action {
@@ -287,7 +288,7 @@ func (automat *AutomatState) GetPositionByDefinedPos(position int, token token.T
 }
 
 /*AddTokenAfter - добавление после*/
-func (automat *AutomatState) AddTokenAfter(tp int, tok token.Token) {
+func (automat *AutomatState) AddTokenAfter(tp int, tok *token.Token) {
 	newToken := automat.GetTokenByTypeNum(tp)
 	newToken.Index = tok.Index + 1
 	newTokens := automat.TokensRepaired
@@ -297,7 +298,7 @@ func (automat *AutomatState) AddTokenAfter(tp int, tok token.Token) {
 }
 
 /*AddTokenBefore - добавить перед*/
-func (automat *AutomatState) AddTokenBefore(tp int, tok token.Token) {
+func (automat *AutomatState) AddTokenBefore(tp int, tok *token.Token) {
 	newToken := automat.GetTokenByTypeNum(tp)
 	newToken.Index = tok.Index
 	newTokens := []token.Token{}
@@ -354,6 +355,8 @@ func (automat *AutomatState) GetTokenByTypeNum(tp int) *token.Token {
 		return &token.Token{Type: token.POINTER}
 	case token.SPACE:
 		return &token.Token{Type: token.SPACE}
+	case token.TYPE:
+		return &token.Token{Type: token.TYPE}
 	default:
 		return &token.Token{Type: token.NONTYPE}
 	}
@@ -369,7 +372,7 @@ func (automat *AutomatState) SetState(newState AutomatInterface) {
 		automat.PointerReset()
 		return
 	case automat.AllStates.ERROR.GetCurrentStateName():
-		automat.State.NextState(automat.AllStates, automat, token.Token{})
+		automat.State.NextState(automat.AllStates, automat, &token.Token{})
 		return
 
 	}

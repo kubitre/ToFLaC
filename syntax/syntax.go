@@ -1,7 +1,6 @@
 package syntax
 
 import (
-	"fmt"
 	"tflac_cw/error_"
 	"tflac_cw/token"
 	"tflac_cw/warning_"
@@ -27,11 +26,11 @@ func (syntx *SyntaxAnalys) New() *SyntaxAnalys {
 /*Analys - точка входа для синтаксического анализа*/
 func (syntx *SyntaxAnalys) Analys(tokens []token.Token) {
 	for _, val := range tokens {
-		fmt.Println(prefix, val)
+		// fmt.Println(prefix, val)
 
 		syntx.SyntaxAnalyser.NewSymb(val)
 
-		fmt.Println(prefix + syntx.SyntaxAnalyser.GetLog())
+		// fmt.Println(prefix + syntx.SyntaxAnalyser.GetLog())
 	}
 
 	syntx.correctionEndSequence()
@@ -53,7 +52,7 @@ func (syntx *SyntaxAnalys) correctionEndSequence() {
 		return
 	default:
 		getLastToken := syntx.SyntaxAnalyser.TokensRepaired[len(syntx.SyntaxAnalyser.TokensRepaired)-1]
-		syntx.SyntaxAnalyser.NewError(getLastToken, "you should add ; for ending our sentence", 0, 1, token.ENDSTATEMENT)
+		syntx.SyntaxAnalyser.NewError(&getLastToken, "you should add ; for ending our sentence", 0, 1, token.ENDSTATEMENT)
 	}
 
 	// if strings.Compare(, ) != 0 {

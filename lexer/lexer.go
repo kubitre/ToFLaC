@@ -108,7 +108,7 @@ func (lex *Lexer) Tokenize() {
 				continue
 			} else {
 				lex.LexerAutomat.SetCache(currentRune)
-				lex.AddTokenReservedWithRepairSettings(lex.LexerAutomat.BufferForContinueParsing, startPosition, endPosition, lex.LexerAutomat.CacheMemory, tokenNumber, 2, lex.LexerAutomat.BufferForRepairStage)
+				lex.AddTokenReservedWithRepairSettings(lex.LexerAutomat.BufferForContinueParsing, startPosition, endPosition, lex.LexerAutomat.CacheMemory, tokenNumber, lex.LexerAutomat.ActionForRepairStage, lex.LexerAutomat.BufferForRepairStage)
 				tokenNumber++
 			}
 		}
@@ -139,7 +139,7 @@ func (lex *Lexer) Tokenize() {
 
 		case token.IDENTIFIER:
 			if lex.LexerAutomat.NeedForRepairChange {
-				lex.AddTokenReservedWithRepairSettings(token.IDENTIFIER, startPosition, endPosition, lex.LexerAutomat.CacheMemory, tokenNumber, 2, lex.LexerAutomat.BufferForRepairStage)
+				lex.AddTokenReservedWithRepairSettings(token.IDENTIFIER, startPosition, endPosition, lex.LexerAutomat.CacheMemory, tokenNumber, lex.LexerAutomat.ActionForRepairStage, lex.LexerAutomat.BufferForRepairStage)
 				lex.LexerAutomat.ChangeNeedRepair()
 			} else {
 				lex.AddTokenUnreserved(token.IDENTIFIER, startPosition, endPosition, lex.LexerAutomat.CacheMemory, tokenNumber)
@@ -169,7 +169,11 @@ func (lex *Lexer) Tokenize() {
 
 			break
 		case token.ERROR:
-			lex.AddTokenUnreserved(token.ERROR, startPosition, endPosition, lex.LexerAutomat.CacheMemory, tokenNumber)
+			if lex.LexerAutomat.NeedForRepairChange {
+				lex.AddTokenReservedWithRepairSettings(token.ERROR, startPosition, endPosition, lex.LexerAutomat.CacheMemory, tokenNumber, lex.LexerAutomat.ActionForRepairStage, lex.LexerAutomat.BufferForRepairStage)
+			} else {
+				lex.AddTokenUnreserved(token.ERROR, startPosition, endPosition, lex.LexerAutomat.CacheMemory, tokenNumber)
+			}
 			if endPosition != startPosition {
 				lex.PrevSym()
 			}
@@ -219,6 +223,7 @@ func (lex *Lexer) AddTokenUnreserved(tokenType, start, end int, val string, toke
 func (lex *Lexer) AddTokenReservedWithRepairSettings(tokenType, start, end int, val string, tokenNumber int, action, payload int) {
 	lex.LexerAutomat.SetContinue(false)
 	lex.LexerAutomat.ResetNeedRepair()
+
 	if lex.Debug {
 		log.Println(prefix + lex.LexerAutomat.GetLog())
 	}

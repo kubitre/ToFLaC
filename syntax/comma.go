@@ -19,7 +19,7 @@ func (state *CommaState) New() *CommaState {
 /*NextState - следующее состояние:
 
  */
-func (state *CommaState) NextState(states *AllStates, context Context, tok token.Token) {
+func (state *CommaState) NextState(states *AllStates, context Context, tok *token.Token) {
 	switch tok.Type {
 	case token.POINTER:
 		if context.PointerValue() == 0 {
@@ -75,8 +75,8 @@ func (state *CommaState) NextState(states *AllStates, context Context, tok token
 		context.SetState(states.ERROR)
 		return
 	case token.NONTYPE:
-		context.NewError(tok, "cannot recognize nontype token", 1, 2, -1)
-		context.SetChangeState(states.COMMA.GetCurrentStateName())
+		context.NewError(tok, "cannot recognize nontype token", 2, 2, token.IDENTIFIER)
+		context.SetChangeState(states.IDENT.GetCurrentStateName())
 		context.SetState(states.ERROR)
 
 	case token.COMMA:

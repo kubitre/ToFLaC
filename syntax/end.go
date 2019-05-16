@@ -15,7 +15,7 @@ func (state *EndState) New() *EndState {
 /*NextState - следующее состояние:
 InitState - в начальное состояние
 */
-func (state *EndState) NextState(states *AllStates, context Context, tok token.Token) {
+func (state *EndState) NextState(states *AllStates, context Context, tok *token.Token) {
 	switch tok.Type {
 	case token.ENDSTATEMENT:
 		context.NewError(tok, "Unexpected end, expected either a space or type of new identifier, or transfer to a new line", 1, 2, -1)

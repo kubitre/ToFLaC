@@ -1,7 +1,6 @@
 package lexer
 
 import (
-	"log"
 	"strings"
 	"tflac_cw/token"
 )
@@ -50,7 +49,7 @@ InitState - в начальное состояние
 func (state *IntState) NextState(states *AllStates, context Context, mark rune) {
 	currentRune := state.GetLastRune()
 
-	log.Println("[LEXER_INT]: Get last rune: ", string(currentRune))
+	// log.Println("[LEXER_INT]: Get last rune: ", string(currentRune))
 
 	if state.StateParse {
 		if strings.Compare(string(mark), string(currentRune)) == 0 {
@@ -60,11 +59,18 @@ func (state *IntState) NextState(states *AllStates, context Context, mark rune) 
 		} else {
 			context.SetMem(token.ERROR)
 			context.SetContinue(true)
-			context.SetTokenForRepairStage(token.INT)
+			context.SetTokenForRepairStage(token.INT, 2)
 			context.SetState(states.INIT)
 		}
 		return
 	} else {
+		if strings.Compare(string(mark), string(' ')) == 0 {
+			context.SetMem(token.ERROR)
+			context.SetTokenForRepairStage(token.TYPE, 2)
+			context.SetState(states.INIT)
+			return
+		}
+
 		context.SetCache(mark)
 
 		if strings.Compare(string(mark), string(currentRune)) == 0 {
@@ -72,7 +78,7 @@ func (state *IntState) NextState(states *AllStates, context Context, mark rune) 
 		} else {
 			context.SetMem(token.ERROR)
 			if state.CurrentPosition >= state.Length-2 {
-				context.SetTokenForRepairStage(token.INT)
+				context.SetTokenForRepairStage(token.INT, 2)
 			}
 			context.SetContinue(true)
 			context.SetState(states.INIT)
