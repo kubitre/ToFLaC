@@ -47,7 +47,7 @@ func (state *InitState) NextState(states *AllStates, context Context, tok *token
 		context.SetState(states.ERROR)
 		return
 	case token.POINTER:
-		context.NewError(tok, "Unexpected pointer! you should add type before this pointer", 0, 0, token.IDENTIFIER)
+		context.NewError(tok, "Unexpected pointer! you should add type before this pointer", 1, 2, token.NONTYPE)
 		context.SetChangeState(states.INIT.GetCurrentStateName())
 		context.SetState(states.ERROR)
 		return
